@@ -1,6 +1,6 @@
 " Davideca's ~/.vimrc file
 " <https://youtube.com/Davideca>
-" Updated on 2021/06/01
+" Updated on 2021/07/28
 
 " Maped keys
 map q :quit<CR>

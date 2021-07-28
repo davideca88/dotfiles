@@ -46,9 +46,9 @@ set modelines=0
 set nocompatible
 
 " Using vim-plug
-call plug#begin()
+" call plug#begin()
 
-Plug 'jiangmiao/auto-pairs'
+" Plug 'jiangmiao/auto-pairs'
 " Plug 'vim-airline/vim-airline'
 
-call plug#end()
+" call plug#end()

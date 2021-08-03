@@ -1,16 +1,22 @@
-" Davideca's ~/.vimrc file
+" Davideca's ~/config/nvim/init.vim
 " <https://youtube.com/Davideca>
-" Updated on 2021/08/01
+" Updated on 2021/08/02
 
 " PLUGINS, using vim-plug
 call plug#begin()
     Plug 'jiangmiao/auto-pairs'
     Plug 'preservim/nerdtree'
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" OLD
+    Plug 'crusoexia/vim-monokai'
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+    " OLD
 "   Plug 'codota/tabnine-vim'
 "   Plug 'vim-airline/vim-airline'
 call plug#end()
+
+" Vim-airline
+let g:airline_theme='minimalist'
 
 " NERDTree
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif

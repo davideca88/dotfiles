@@ -1,4 +1,4 @@
-" Davideca's ~/config/nvim/init.vim
+" Davideca's ~/.config/nvim/init.vim
 " <https://youtube.com/Davideca>
 " Updated on 2021/08/02
 
@@ -10,9 +10,6 @@ call plug#begin()
     Plug 'crusoexia/vim-monokai'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-    " OLD
-"   Plug 'codota/tabnine-vim'
-"   Plug 'vim-airline/vim-airline'
 call plug#end()
 
 " Vim-airline

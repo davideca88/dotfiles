@@ -14,6 +14,7 @@ call plug#end()
 
 " Vim-airline
 let g:airline_theme='minimalist'
+let g:airline_powerline_fonts = 1
 
 " NERDTree
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -60,4 +61,4 @@ set nowrap
 set modelines=0
 
 " Live feedback
-set inccommand=split
+"set inccommand=split

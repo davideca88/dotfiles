@@ -1,10 +1,9 @@
 -- Deca's ~/.config/nvim/init.lua
--- what was I doing: redoing the keymaps. Thinking on a NERDtree and vim-plug alternative
 
 --[[
 CONTENTS
 
-1. Plugins (actually vim-plug)                                                                                              lua-plugins
+1. Plugins (currently vim-plug)                                                                                              lua-plugins
 
     -> Plugin configs                                                                                                       lua-plugin-config
     -> Colorscheme (sonokai)                                                                                                lua-plugin-config-colorscheme

@@ -1,16 +1,20 @@
 -- Deca's ~/.config/nvim/init.lua
-
+-- what was I doing: 
 --[[
-CONTENTS
+CONTENTS                                                                                                                    |lua-contents|
 
-1. Plugins (currently vim-plug)                                                                                              lua-plugins
+1. Plugins (actually *vim-plug)                                                                                             lua-plugins
+*see installation                                                                                                           lua-install-plugin-manager
 
     -> Plugin configs                                                                                                       lua-plugin-config
-    -> Colorscheme (sonokai)                                                                                                lua-plugin-config-colorscheme
     -> Nvim-cmp                                                                                                             lua-plugin-config-cmp
+    -> Sonokai                                                                                                              lua-plugin-config-sonokai
+    -> Presence.nvim                                                                                                        lua-plugin-config-presence
     -> Lualine                                                                                                              lua-plugin-config-lualine
     -> Bufferline                                                                                                           lua-plugin-config-bufferline
-    -> NERDtree                                                                                                             lua-plugin-config-nerdtree
+    -> Nvim-tree                                                                                                            lua-plugin-config-nvim-tree
+    -> Nvim-autopairs                                                                                                       lua-plugin-config-nvim-autopairs
+    -> Nvim-treesitter                                                                                                      lua-plugin-config-nvim-treesitter    
     
 2. Options                                                                                                                  lua-options
 
@@ -26,26 +30,27 @@ CONTENTS
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
-    Plug ('jiangmiao/auto-pairs')
-   
     Plug ('neovim/nvim-lspconfig')
     Plug ('hrsh7th/nvim-cmp')
     Plug ('hrsh7th/cmp-nvim-lsp')
     Plug ('hrsh7th/cmp-buffer')
     Plug ('hrsh7th/cmp-path')
     Plug ('hrsh7th/cmp-cmdline')
-    
     Plug ('L3MON4D3/LuaSnip')
     Plug ('rafamadriz/friendly-snippets')
-    
+
+    Plug ('sainnhe/sonokai')
+
     Plug ('nvim-tree/nvim-web-devicons')
     Plug ('nvim-lualine/lualine.nvim')
     Plug ('akinsho/bufferline.nvim', { ['tag'] = '*' })
-
-    Plug ('sheerun/vim-polyglot')
-    Plug ('sainnhe/sonokai')
-
-    Plug ('preservim/nerdtree')
+    
+    Plug ('nvim-tree/nvim-tree.lua')
+    -- Plug ('sheerun/vim-polyglot')
+    
+    Plug ('windwp/nvim-autopairs')
+    
+    Plug ('nvim-treesitter/nvim-treesitter', { ['do'] = ':TSUpdate' })
 
     Plug ('andweeb/presence.nvim')
 
@@ -90,7 +95,6 @@ local kind_icons = {
 cmp.setup({
 
     snippet = {
-        -- REQUIRED - you must specify a snippet engine
         expand = function(args)
             require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
             -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
@@ -106,8 +110,9 @@ cmp.setup({
 
         ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
         ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
+
     }),
-     
+   
     
     formatting = {
         fields = {"kind", "abbr", "menu"},
@@ -159,12 +164,37 @@ for type, icon in pairs(signs) do
     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
--- Colorscheme                                                                                                              lua-plugin-config-colorscheme 
+-- Sonokai                                                                                                                  lua-plugin-config-sonokai 
 vim.cmd.colorscheme('sonokai')
 vim.g.sonokai_style = 'atlantis'
 vim.g.sonokai_better_performance = 0
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
 
+-- Presence.nvim                                                                                                            lua-plugin-config-presence
+-- The setup config table shows all available config options with their default values:
+require("presence").setup({
+    -- General options
+    auto_update         = true,                       -- Update activity based on autocmd events (if `false`, map or manually execute `:lua package.loaded.presence:update()`)
+    neovim_image_text   = "The one true text editor.", -- Text displayed when hovered over the Neovim image
+    main_image          = "neovim",                   -- Main image display (either "neovim" or "file")
+    client_id           = "793271441293967371",       -- Use your own Discord application client id (not recommended)
+    log_level           = nil,                        -- Log messages at or above this level (one of the following: nil, debug", "info", "warn", "error")
+    debounce_timeout    = 10,                         -- Number of seconds to debounce events (or calls to `:lua package.loaded.presence:update(<filename>, true)`)
+    enable_line_number  = true,                       -- Displays the current line number instead of the current project
+    blacklist           = {},                         -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
+    buttons             = true,                       -- Configure Rich Presence button(s), either a boolean to enable/disable, a static table (`{{ label = "<label>", url = "<url>" }, ...}`, or a function(buffer: string, repo_url: string|nil): table)
+    file_assets         = {},                         -- Custom file asset definitions keyed by file names and extensions (see default config at `lua/presence/file_assets.lua` for reference)
+    show_time           = true,                       -- Show the timer
+
+    -- Rich Presence text options
+    editing_text        = "Editing %s",               -- Format string rendered when an editable file is loaded in the buffer (either string or function(filename: string): string)
+    file_explorer_text  = "Browsing %s",              -- Format string rendered when browsing a file explorer (either string or function(file_explorer_name: string): string)
+    git_commit_text     = "Committing changes",       -- Format string rendered when committing changes in git (either string or function(filename: string): string)
+    plugin_manager_text = "Managing plugins",         -- Format string rendered when managing plugins (either string or function(plugin_manager_name: string): string)
+    reading_text        = "Reading %s",               -- Format string rendered when a read-only or unmodifiable file is loaded in the buffer (either string or function(filename: string): string)
+    workspace_text      = "Working on %s",            -- Format string rendered when in a git repository (either string or function(project_name: string|nil, filename: string): string)
+    line_number_text    = "Line %s out of %s",        -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
+})
 
 -- Lualine                                                                                                                  lua-plugin-config-lualine
 require('lualine').setup({
@@ -181,10 +211,46 @@ require('bufferline').setup{
     }
 }
 
--- NERDTree                                                                                                                 lua-plugin-config-nerdtree
--- Use <C-o> to open/close NERDTree
-vim.cmd.autocmd([[ BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif ]])
-vim.cmd([[ nnoremap <C-o> :NERDTreeToggle<CR> ]])
+-- Nvim-tree                                                                                                                lua-plugin-config-nvim-tree
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- Setup with some options
+require("nvim-tree").setup({
+    sort = {
+      sorter = "case_sensitive",
+    },
+    
+    view = {
+      width = 30,
+    },
+    
+    renderer = {
+      group_empty = true,
+    },
+    
+    filters = {
+      dotfiles = true,
+    },
+})
+
+
+-- Nvim-autopairs                                                                                                           lua-plugin-config-nvim-autopairs
+
+require('nvim-autopairs').setup({})
+
+-- Nvim-treesitter                                                                                                          lua-plugin-config-nvim-treesitter
+require('nvim-treesitter.configs').setup {
+  highlight = {
+    enable = false,
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
 
 -- ####################################################################################################################################################################################################
 
@@ -242,16 +308,29 @@ keymap('n', '<C-k>', ':<C-w>k', opts)
 keymap('n', '<C-j>', ':<C-w>j', opts)
 keymap('n', '<C-h>', ':<C-w>h', opts)
 
+-- NvimTree bind
+keymap('n', '<C-o>', ':NvimTreeToggle<CR>', opts)
+
 -- Insert mode
 
 -- Visual mode
 
 -- ####################################################################################################################################################################################################
 
+-- Install plugin manager                                                                                                   lua-install-plugin-manager
+--[[
+
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+--]]
+
+-- ####################################################################################################################################################################################################
+
 -- LEGACY                                                                                                                   lua-legacy
 
 -- PLUGINS ----------------------------
-
+ 
 --    Plug ('ryanoasis/vim-devicons')
 --    Plug ('williamboman/mason.nvim')
 --    Plug ('williamboman/mason-lspconfig.nvim')
@@ -277,6 +356,12 @@ keymap('n', '<C-h>', ':<C-w>h', opts)
 --    map      <C-j>      <C-w>j
 --    map      <C-h>      <C-w>h
 --]])
+
+
+-- NERDTree                                                                                                                 
+-- Use <C-o> to open/close NERDTree
+-- vim.cmd.autocmd([[ BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif ]])
+-- vim.cmd([[ nnoremap <C-o> :NERDTreeToggle<CR> ]])
 
 -- lsp-config
 -- require("lspconfig").ccls.setup{}

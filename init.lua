@@ -146,16 +146,32 @@ cmp.setup({
     }),
 
     experimental = {
-        ghost_text = true,
+        ghost_text = false,
     }
 
 }) -- end of cmp.setup
 
 -- LSP configs (lsp-config and cmp_nvim_lsp)
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-require('lspconfig')['clangd'].setup {
+local lspconfig = require('lspconfig')
+
+-- clangd for c/c++
+lspconfig.clangd.setup {
     capabilities = capabilities
 }
+
+-- pyright for python3.x
+lspconfig.pyright.setup {
+    capabilities = capabilities
+}
+
+-- auto parentheses
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
 
 -- Signs for LSP on editor
 local signs = { Error = "", Warn = "", Hint = "", Info = "" }
@@ -248,7 +264,7 @@ require('nvim-treesitter.configs').setup {
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
+    additional_vim_regex_highlighting = true,
   },
 }
 

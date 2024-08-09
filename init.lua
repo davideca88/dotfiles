@@ -19,14 +19,39 @@ CONTENTS                                                                        
 2. Options                                                                                                                  lua-options
 
 3. Keymaps                                                                                                                  lua-keymaps
-
-4. Legacy configs                                                                                                           lua-legacy
 ]]--
 
 -- ####################################################################################################################################################################################################
 
--- PLUGINS, using vim-plug                                                                                                  lua-plugins
+-- PLUGINS, using vim-plug                                                                                                  lua-*plugins
 
+require "paq" {
+    'sainnhe/sonokai',
+    'neovim/nvim-lspconfig',
+    'hrsh7th/nvim-cmp',
+    'hrsh7th/cmp-nvim-lsp',
+    'hrsh7th/cmp-buffer',
+    'hrsh7th/cmp-path',
+    'hrsh7th/cmp-cmdline',
+    'L3MON4D3/LuaSnip',
+    'rafamadriz/friendly-snippets',
+
+    'sainnhe/sonokai',
+
+    'nvim-tree/nvim-web-devicons',
+    'nvim-lualine/lualine.nvim',
+    'akinsho/bufferline.nvim',
+
+    'nvim-tree/nvim-tree.lua',
+
+    'windwp/nvim-autopairs',
+
+    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    'andweeb/presence.nvim',
+
+}
+
+--[[local vim = vim
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
@@ -44,23 +69,23 @@ vim.call('plug#begin')
     Plug ('nvim-tree/nvim-web-devicons')
     Plug ('nvim-lualine/lualine.nvim')
     Plug ('akinsho/bufferline.nvim', { ['tag'] = '*' })
-    
+
     Plug ('nvim-tree/nvim-tree.lua')
     -- Plug ('sheerun/vim-polyglot')
-    
+
     Plug ('windwp/nvim-autopairs')
-    
+
     Plug ('nvim-treesitter/nvim-treesitter', { ['do'] = ':TSUpdate' })
 
     Plug ('andweeb/presence.nvim')
 
 vim.call('plug#end')
-
+]]--
 -- ####################################################################################################################################################################################################
 
 -- Plugin configs                                                                                                           lua-plugin-config
 
--- nvim-cmp                                                                                                                 lua-plugin-config-cmp
+-- nvim-cmp                                                                                                                 lua-plugin-config-*cmp
 
 local cmp = require('cmp')
 local kind_icons = {
@@ -100,11 +125,12 @@ cmp.setup({
             -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
         end,
     },
-    
+
     mapping = cmp.mapping.preset.insert({
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(),
+
         ['<C-e>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 
@@ -112,17 +138,16 @@ cmp.setup({
         ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
 
     }),
-   
-    
+
     formatting = {
         fields = {"kind", "abbr", "menu"},
         format = function(entry, vim_item)
         -- Kind icons
         vim_item.kind = string.format("%s", kind_icons[vim_item.kind])
         -- vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
-        
+
         -- Source
-        vim_item.menu = ({ 
+        vim_item.menu = ({
             nvim_lsp = "[LSP]",
             luasnip = "[Snippet]",
             buffer = "[Buffer]",
@@ -131,16 +156,16 @@ cmp.setup({
         return vim_item
     end
   },
-   
+
     window = {
         documentation = {
             border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
         },
     },
-  
+
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
-        { name = 'luasnip' }, 
+        { name = 'luasnip' },
         { name = 'buffer' },
         { name = 'path' },
     }),
@@ -155,6 +180,14 @@ cmp.setup({
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lspconfig = require('lspconfig')
 
+-- template
+--[[
+lspconfig.<LSP>.setup {
+    capabilities = capabilities
+}
+]]--
+
+
 -- clangd for c/c++
 lspconfig.clangd.setup {
     capabilities = capabilities
@@ -165,12 +198,25 @@ lspconfig.pyright.setup {
     capabilities = capabilities
 }
 
+-- luals for lua
+lspconfig.lua_ls.setup {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = {
+                    "vim",
+                }
+            }
+        }
+    }
+}
+
 -- auto parentheses
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-local cmp = require('cmp')
 cmp.event:on(
-  'confirm_done',
-  cmp_autopairs.on_confirm_done()
+    'confirm_done',
+    cmp_autopairs.on_confirm_done()
 )
 
 -- Signs for LSP on editor
@@ -180,13 +226,13 @@ for type, icon in pairs(signs) do
     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
--- Sonokai                                                                                                                  lua-plugin-config-sonokai 
+-- Sonokai                                                                                                                  lua-plugin-config-*sonokai 
 vim.cmd.colorscheme('sonokai')
 vim.g.sonokai_style = 'atlantis'
 vim.g.sonokai_better_performance = 0
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
 
--- Presence.nvim                                                                                                            lua-plugin-config-presence
+-- Presence.nvim                                                                                                            lua-plugin-config-*presence
 -- The setup config table shows all available config options with their default values:
 require("presence").setup({
     -- General options
@@ -212,14 +258,14 @@ require("presence").setup({
     line_number_text    = "Line %s out of %s",        -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
 })
 
--- Lualine                                                                                                                  lua-plugin-config-lualine
+-- Lualine                                                                                                                  lua-plugin-config-*lualine
 require('lualine').setup({
     options = {
         theme = 'sonokai'
     }
 })
 
--- Bufferline                                                                                                               lua-plugin-config-bufferline
+-- Bufferline                                                                                                               lua-plugin-config-*bufferline
 require('bufferline').setup{
     options = {
         theme = 'sonokai',
@@ -227,7 +273,7 @@ require('bufferline').setup{
     }
 }
 
--- Nvim-tree                                                                                                                lua-plugin-config-nvim-tree
+-- Nvim-tree                                                                                                                lua-plugin-config-nvim-*tree
 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -237,40 +283,40 @@ require("nvim-tree").setup({
     sort = {
       sorter = "case_sensitive",
     },
-    
+
     view = {
       width = 30,
     },
-    
+
     renderer = {
       group_empty = true,
     },
-    
+
     filters = {
       dotfiles = true,
     },
 })
 
 
--- Nvim-autopairs                                                                                                           lua-plugin-config-nvim-autopairs
+-- Nvim-autopairs                                                                                                           lua-plugin-config-nvim-*autopairs
 
 require('nvim-autopairs').setup({})
 
--- Nvim-treesitter                                                                                                          lua-plugin-config-nvim-treesitter
+-- Nvim-treesitter                                                                                                          lua-plugin-config-nvim-*treesitter
 require('nvim-treesitter.configs').setup {
   highlight = {
-    enable = false,
+    enable = true,
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = true,
+    additional_vim_regex_highlighting = false,
   },
 }
 
 -- ####################################################################################################################################################################################################
 
--- Options                                                                                                                  lua-options
+-- Options                                                                                                                  lua-*options
 
 vim.opt.termguicolors = true
 vim.opt.showmode = false           -- Remove modes on prompt (useful with *line like plugins)
@@ -297,9 +343,9 @@ vim.opt.clipboard = "unnamedplus"
 
 -- ####################################################################################################################################################################################################
 
--- Keymaps                                                                                                                  lua-keymaps
+-- Keymaps                                                                                                                  lua-*keymaps
 local opts = { noremap = true, silent = true }
-keymap = vim.api.nvim_set_keymap
+local keymap = vim.api.nvim_set_keymap
 
 -- Modes
 --   normal_mode = "n",
@@ -309,23 +355,26 @@ keymap = vim.api.nvim_set_keymap
 --   visual_block_mode = "x",
 --   term_mode = "t",
 
+-- template
+-- keymap('mode', 'bind', 'command', opts)
+
 -- Normal mode
 
-keymap('n', 'q', ':quit<CR>', opts)
-keymap('n', 'w', ':write<CR>', opts)
-keymap('n', 'x', ':wq<CR>', opts)
-keymap('n', '<S-q>', ':q!<CR>', opts)
-keymap('n', '<C-p>', ':source<CR>', opts)
-keymap('n', '<C-right>', ':bn<CR>', opts)
-keymap('n', '<C-left>', ':bp<CR>', opts)
-keymap('n', '<C-del>', ':bd<CR>', opts)
+keymap('n', 'q', ':quit<CR>', opts)         -- quit
+keymap('n', 'w', ':write<CR>', opts)        -- save
+keymap('n', 'x', ':wq<CR>', opts)           -- save and quit
+keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
+keymap('n', '<C-p>', ':source<CR>', opts)   -- source
+keymap('n', '<C-right>', ':bn<CR>', opts)   -- next buffer
+keymap('n', '<C-left>', ':bp<CR>', opts)    -- previous buffer
+keymap('n', '<C-del>', ':bd<CR>', opts)     -- buffer delete
 keymap('n', '<C-l>', ':<C-w>l', opts)
 keymap('n', '<C-k>', ':<C-w>k', opts)
 keymap('n', '<C-j>', ':<C-w>j', opts)
 keymap('n', '<C-h>', ':<C-w>h', opts)
 
 -- NvimTree bind
-keymap('n', '<C-o>', ':NvimTreeToggle<CR>', opts)
+keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- map the slash (/) for NvimTree
 
 -- Insert mode
 
@@ -333,67 +382,10 @@ keymap('n', '<C-o>', ':NvimTreeToggle<CR>', opts)
 
 -- ####################################################################################################################################################################################################
 
--- Install plugin manager                                                                                                   lua-install-plugin-manager
+-- Install plugin manager                                                                                                   lua-*install-plugin-manager
 --[[
 
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
 --]]
-
--- ####################################################################################################################################################################################################
-
--- LEGACY                                                                                                                   lua-legacy
-
--- PLUGINS ----------------------------
- 
---    Plug ('ryanoasis/vim-devicons')
---    Plug ('williamboman/mason.nvim')
---    Plug ('williamboman/mason-lspconfig.nvim')
---    Plug ('neoclide/coc.nvim', { ['branch'] = 'release' })
---    Plug ('ms-jpq/coq_nvim', { ['branch'] = 'coq'} )
---    Plug ('ms-jpq/coq.artifacts', { ['branch'] = 'artifacts'} )
-
----------------------------------------
-
--- Keymaps ----------------------------
-
---vim.cmd([[
---    nnoremap q          :quit<CR>
---    nnoremap w          :write<CR>
---    nnoremap x          :wq<CR>
---    nnoremap <S-q>      :q!<CR>
---    nnoremap <C-p>      :source<CR>
---    nnoremap <C-right>  :bn<CR>
---    nnoremap <C-left>   :bp<CR>
---    nnoremap <C-del>    :bd<CR>
---    map      <C-l>      <C-w>l
---    map      <C-k>      <C-w>k
---    map      <C-j>      <C-w>j
---    map      <C-h>      <C-w>h
---]])
-
-
--- NERDTree                                                                                                                 
--- Use <C-o> to open/close NERDTree
--- vim.cmd.autocmd([[ BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif ]])
--- vim.cmd([[ nnoremap <C-o> :NERDTreeToggle<CR> ]])
-
--- lsp-config
--- require("lspconfig").ccls.setup{}
-
--- CoCNvim <tab>
---vim.cmd([[ inoremap <expr> <tab> coc#pum#visible() ? coc#pum#confirm() : "\<tab>" ]])
---local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
---vim.keymap.set("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts)
-
--- Mason
-
---require("mason").setup()
---require("mason-lspconfig").setup()
---require("lspconfig").ccls.setup{}
-
--- Vim-airline
--- vim.g.airline_theme = "sonokai" -- Previous: minimalist
--- vim.g.airline_powerline_fonts = 1
--- vim.cmd([[ let g:airline#extensions#tabline#enabled = 1 ]])

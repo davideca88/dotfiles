@@ -17,7 +17,7 @@ git clone --depth=1 https://github.com/savq/paq-nvim.git \
     "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
 
 # Create ~/.config and put init.lua
-mkdir -p $HOME/.config/
+mkdir -p $HOME/.config/nvim/
 curl https://raw.githubusercontent.com/davideca88/dotfiles/refs/heads/master/light-init.lua > $HOME/.config/nvim/init.lua
 
 # Install Meslo NerdFont

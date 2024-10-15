@@ -20,5 +20,9 @@ git clone --depth=1 https://github.com/savq/paq-nvim.git \
 mkdir -p $HOME/.config/
 curl https://raw.githubusercontent.com/davideca88/dotfiles/refs/heads/master/light-init.lua > $HOME/.config/nvim/init.lua
 
-# Install NerdFonts
-cd /tmp && git clone https://github.com/ryanoasis/nerd-fonts && sh /tmp/nerd-fonts/install.sh
+# Install Meslo NerdFont
+
+mkdir -p $HOME/.local/share/fonts/ &&\
+wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf \
+-O $HOME/.local/share/fonts/MesloLGSNFRegular.ttf
+fc-cache -fv

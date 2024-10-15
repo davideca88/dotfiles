@@ -3,11 +3,8 @@
 # Made by a human ;)
 # Script for easy install and minimal configure NeoVim when I'm out of home
 
-# Install NerdFonts
-cd /tmp && git clone https://github.com/ryanoasis/nerd-fonts && sh /tmp/nerd-fonts/install.sh
-cd /tmp
-
 # Install NeoVim locally without super user
+cd /tmp && \
 git clone https://github.com/neovim/neovim && \
 cd neovim && \
 git checkout stable && \
@@ -22,3 +19,6 @@ git clone --depth=1 https://github.com/savq/paq-nvim.git \
 # Create ~/.config and put init.lua
 mkdir -p $HOME/.config/
 curl https://raw.githubusercontent.com/davideca88/dotfiles/refs/heads/master/light-init.lua > $HOME/.config/nvim/init.lua
+
+# Install NerdFonts
+cd /tmp && git clone https://github.com/ryanoasis/nerd-fonts && sh /tmp/nerd-fonts/install.sh

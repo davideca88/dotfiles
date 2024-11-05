@@ -1,47 +1,47 @@
 -- Deca's ~/.config/nvim/init.lua
--- what was I doing: 
---[[
+--[[ made by a human ;)
 CONTENTS                                                                                                                    |lua-contents|
 
 1. Plugins (actually *paq-nvim)                                                                                             lua-paq
 *see installation                                                                                                           lua-install-plugin-manager
-
     -> Plugin configs                                                                                                       lua-plugin-config
-    -> Nvim-cmp                                                                                                             lua-plugin-config-cmp
-    -> Sonokai                                                                                                              lua-plugin-config-sonokai
-    -> Presence.nvim                                                                                                        lua-plugin-config-presence
-    -> Lualine                                                                                                              lua-plugin-config-lualine
-    -> Bufferline                                                                                                           lua-plugin-config-bufferline
-    -> Nvim-tree                                                                                                            lua-plugin-config-nvim-tree
-    -> Nvim-autopairs                                                                                                       lua-plugin-config-nvim-autopairs
-    -> Nvim-treesitter                                                                                                      lua-plugin-config-nvim-treesitter    
+      -> Nvim-cmp                                                                                                           lua-plugin-config-cmp
+      -> Sonokai                                                                                                            lua-plugin-config-sonokai
+      -> Neocord                                                                                                            lua-plugin-config-neocord
+      -> Lualine                                                                                                            lua-plugin-config-lualine
+      -> Bufferline                                                                                                         lua-plugin-config-bufferline
+      -> Toggleterm.nvim                                                                                                    lua-plugin-config-toggleterm
+      -> Nvim-tree                                                                                                          lua-plugin-config-nvim-tree
+      -> Nvim-autopairs                                                                                                     lua-plugin-config-nvim-autopairs
+      -> Nvim-treesitter                                                                                                    lua-plugin-config-nvim-treesitter    
     
 2. Options                                                                                                                  lua-options
 
 3. Keymaps                                                                                                                  lua-keymaps
-]]--
 
+]]--
 -- ####################################################################################################################################################################################################
 
 -- PLUGINS, using paq-nvim                                                                                                  lua-*paq
 
 require('paq') {
-    'savq/paq-nvim',
-    { 'sainnhe/sonokai', opt = true },
-    { 'neovim/nvim-lspconfig', opt = true },
-    { 'hrsh7th/nvim-cmp', opt = true },
-    { 'hrsh7th/cmp-nvim-lsp', opt = true },
-    { 'hrsh7th/cmp-buffer', opt = true },
-    { 'hrsh7th/cmp-path', opt = true },
-    { 'hrsh7th/cmp-cmdline', opt = true },
-    { 'L3MON4D3/LuaSnip', opt = true },
-    { 'nvim-tree/nvim-web-devicons', opt = true },
-    { 'nvim-lualine/lualine.nvim', opt = true },
-    { 'akinsho/bufferline.nvim', opt = true },
-    { 'nvim-tree/nvim-tree.lua', opt = true },
-    { 'windwp/nvim-autopairs', opt = true },
-    { 'jiriks74/presence.nvim', opt = true },
-    { 'nvim-treesitter/nvim-treesitter', opt = true, build = ':TSUpdate' },
+    { 'savq/paq-nvim' },
+    { 'sainnhe/sonokai' },
+    { 'neovim/nvim-lspconfig' },
+    { 'hrsh7th/nvim-cmp' },
+    { 'hrsh7th/cmp-nvim-lsp' },
+    { 'hrsh7th/cmp-buffer' },
+    { 'hrsh7th/cmp-path' },
+    { 'hrsh7th/cmp-cmdline' },
+    { 'L3MON4D3/LuaSnip' },
+    { 'nvim-tree/nvim-web-devicons' },
+    { 'nvim-lualine/lualine.nvim' },
+    { 'akinsho/bufferline.nvim' },
+    { 'akinsho/toggleterm.nvim' },
+    { 'nvim-tree/nvim-tree.lua' },
+    { 'windwp/nvim-autopairs' },
+    { 'IogaMaster/neocord' },
+    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
 
 }
 -- ####################################################################################################################################################################################################
@@ -156,6 +156,10 @@ lspconfig.clangd.setup {
     capabilities = capabilities
 }
 
+lspconfig.arduino_language_server.setup {
+    capabilities = capabilities
+}
+
 -- pyright for python3.x
 lspconfig.pyright.setup {
     capabilities = capabilities
@@ -196,9 +200,9 @@ vim.g.sonokai_style = 'atlantis'
 vim.g.sonokai_better_performance = 0
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
 
--- Presence.nvim                                                                                                            lua-plugin-config-*presence
+-- Neocord                                                                                                                  lua-plugin-config-*neocord 
 -- The setup config table shows all available config options with their default values:
---[[require("neocord").setup({
+require("neocord").setup({
     -- General options
     logo                = "auto",                     -- "auto" or url
     logo_tooltip        = nil,                        -- nil or string
@@ -209,7 +213,8 @@ vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
     blacklist           = {},                         -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
     file_assets         = {},                         -- Custom file asset definitions keyed by file names and extensions (see default config at `lua/presence/file_assets.lua` for reference)
     show_time           = true,                       -- Show the timer
-    global_timer        = false,                      -- if set true, timer won't update when any event are triggered
+    global_timer        = true,                       -- if set true, timer won't update when any event are triggered
+    enable_line_number  = true,
 
     -- Rich Presence text options
     editing_text        = "Editing %s",               -- Format string rendered when an editable file is loaded in the buffer (either string or function(filename: string): string)
@@ -221,34 +226,6 @@ vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
     line_number_text    = "Line %s out of %s",        -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
     terminal_text       = "Using Terminal",           -- Format string rendered when in terminal mode.
 })
-]]--
--- The setup config table shows all available config options with their default values:
-
-require("presence").setup({
-    -- General options
-    auto_update         = true,                       -- Update activity based on autocmd events (if `false`, map or manually execute `:lua package.loaded.presence:update()`)
-    neovim_image_text   = "The one true text editor.", -- Text displayed when hovered over the Neovim image
-    main_image          = "neovim",                   -- Main image display (either "neovim" or "file")
-    client_id           = "1172122807501594644",      -- Use your own Discord application client id (not recommended)
-    --    client_id           = "793271441293967371",       -- Use your own Discord application client id (not recommended)
-    log_level           = nil,                        -- Log messages at or above this level (one of the following: nil, debug", "info", "warn", "error")
-    debounce_timeout    = 10,                         -- Number of seconds to debounce events (or calls to `:lua package.loaded.presence:update(<filename>, true)`)
-    enable_line_number  = true,                       -- Displays the current line number instead of the current project
-    blacklist           = {},                         -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
-    buttons             = true,                       -- Configure Rich Presence button(s), either a boolean to enable/disable, a static table (`{{ label = "<label>", url = "<url>" }, ...}`, or a function(buffer: string, repo_url: string|nil): table)
-    file_assets         = {},                         -- Custom file asset definitions keyed by file names and extensions (see default config at `lua/presence/file_assets.lua` for reference)
-    show_time           = true,                       -- Show the timer
-
-    -- Rich Presence text options
-    editing_text        = "Editing %s",               -- Format string rendered when an editable file is loaded in the buffer (either string or function(filename: string): string)
-    file_explorer_text  = "Browsing %s",              -- Format string rendered when browsing a file explorer (either string or function(file_explorer_name: string): string)
-    git_commit_text     = "Committing changes",       -- Format string rendered when committing changes in git (either string or function(filename: string): string)
-    plugin_manager_text = "Managing plugins",         -- Format string rendered when managing plugins (either string or function(plugin_manager_name: string): string)
-    reading_text        = "Reading %s",               -- Format string rendered when a read-only or unmodifiable file is loaded in the buffer (either string or function(filename: string): string)
-    workspace_text      = "Working on %s",            -- Format string rendered when in a git repository (either string or function(project_name: string|nil, filename: string): string)
-    line_number_text    = "Line %s out of %s",        -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
-})
-
 
 -- Lualine                                                                                                                  lua-plugin-config-*lualine
 require('lualine').setup({
@@ -264,6 +241,25 @@ require('bufferline').setup{
         separator_style = 'slant'
     }
 }
+
+-- Toggleterm.nvim                                                                                                          lua-plugin-config-*toggleterm
+require('toggleterm').setup{
+    open_mapping = [[<C-\>]],
+    size = 30,
+    hide_numbers = true,
+    shading_factor = '10',
+    close_on_exit = true,
+    start_in_insert = true,
+    insert_mappings = true,
+    direction = 'float',
+    float_opts = {
+        border = 'curved', -- 'single' | 'double' | 'shadow' | 'curved'
+        -- width = <value>,
+        -- height = <value>,
+        winblend = 10,
+  }
+}
+
 
 -- Nvim-tree                                                                                                                lua-plugin-config-nvim-*tree
 -- disable netrw at the very start of your init.lua

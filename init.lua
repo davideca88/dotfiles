@@ -97,9 +97,25 @@ cmp.setup({
         ['<C-e>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 
-        ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
+        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
 
+        ['<UP>'] = cmp.mapping({
+            i = function(fallback)
+                if cmp.visible() then
+                    cmp.close()
+                end
+                fallback()
+            end
+        }),
+        ['<DOWN>'] = cmp.mapping({
+            i = function(fallback)
+                if cmp.visible() then
+                    cmp.close()
+                end
+                fallback()
+            end
+        }),
     }),
 
     formatting = {

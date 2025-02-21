@@ -260,7 +260,7 @@ require('bufferline').setup{
 
 -- Toggleterm.nvim                                                                                                          lua-plugin-config-*toggleterm
 require('toggleterm').setup{
-    open_mapping = [[<C-\>]],
+    open_mapping = [[\]],
     size = 30,
     hide_numbers = true,
     shading_factor = '10',
@@ -338,12 +338,23 @@ vim.opt.expandtab = true
 
 vim.opt.autoindent = true   -- Autoindent
 vim.opt.cpoptions = vim.opt.cpoptions + "I"
+vim.opt.indentkeys = vim.opt.indentkeys - ":'indentkeysi"
 
 vim.cmd.syntax('on')        -- Syntax highlight
+vim.g.c_syntax_for_h = 1
 vim.opt.wrap = false        -- No wrap the line
 vim.opt.modelines = 0       -- Security
 vim.opt.cursorline = true
 vim.opt.clipboard = "unnamedplus"
+
+-- Restores the cursor after closing nvim (current: block, 1200ms, 600blinkon, 600blinkoff)
+vim.cmd([[
+    augroup RestoreCursorShapeOnExit
+        autocmd!
+        autocmd VimLeave * set guicursor=a:block-blinkwait1200-blinkon600-blinkoff600
+    augroup END
+]])
+
 
 -- ####################################################################################################################################################################################################
 
@@ -382,15 +393,20 @@ keymap('n', '<C-k>', ':<C-w>k', opts)
 keymap('n', '<C-j>', ':<C-w>j', opts)
 keymap('n', '<C-h>', ':<C-w>h', opts)
 
+keymap('n', 'S', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
+
 -- Insert mode
-keymap('i', '<Leader>;', '<C-o>A;', opts)
+keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)
 
 -- ####################################################################################################################################################################################################
 
--- Install plugin manager                                                                                                   lua-*install-plugin-manager
+-- Install extra                                                                                                   lua-*install-plugin-manager
 --[[
 
+# paq-nvim
 git clone --depth=1 https://github.com/savq/paq-nvim.git \
     "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
 
+# sudowrite
+wget https://gist.githubusercontent.com/oessessnex/d63ebe89380abff5a3ee70d6e76e4ec8/raw/d1692b5a2c5d9dcca59f0c84903fba141ffb7357/sudowrite.lua
 --]]

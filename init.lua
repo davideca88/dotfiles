@@ -254,20 +254,21 @@ require('lualine').setup({
 require('bufferline').setup{
     options = {
         theme = 'sonokai',
-        separator_style = 'slant'
+        separator_style = 'slant',
+        diagnostics = 'nvim_lsp'
     }
 }
 
 -- Toggleterm.nvim                                                                                                          lua-plugin-config-*toggleterm
 require('toggleterm').setup{
-    open_mapping = [[\]],
+    open_mapping = [[<c-\>]],
     size = 30,
     hide_numbers = true,
     shading_factor = '10',
     close_on_exit = true,
     start_in_insert = true,
     insert_mappings = true,
-    direction = 'float',
+    direction = 'float',    -- 'vertical', 'tab'
     float_opts = {
         border = 'curved', -- 'single' | 'double' | 'shadow' | 'curved'
         -- width = <value>,
@@ -304,7 +305,7 @@ require("nvim-tree").setup({
 
 -- Nvim-autopairs                                                                                                           lua-plugin-config-nvim-*autopairs
 
-require('nvim-autopairs').setup({})
+require('nvim-autopairs').setup()
 
 -- Nvim-treesitter                                                                                                          lua-plugin-config-nvim-*treesitter
 require('nvim-treesitter.configs').setup {
@@ -377,7 +378,7 @@ vim.g.mapleader = ","
 -- keymap('mode', 'bind', 'command', opts)
 
 -- NvimTree bind
-keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- map the slash (/) for NvimTree
+keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- (Ctrl-/) for NvimTree
 
 -- Normal mode
 keymap('n', 'q', ':quit<CR>', opts)         -- quit

@@ -26,3 +26,16 @@ mkdir -p $HOME/.local/share/fonts/ &&\
 wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf \
 -O $HOME/.local/share/fonts/MesloLGSNFRegular.ttf
 fc-cache -fv
+
+# Install clangd for c/c++
+
+cd $HOME
+wget https://github.com/clangd/clangd/releases/download/20.1.0/clangd-linux-20.1.0.zip \
+    -O clangd.zip && \
+unzip clangd.zip && \
+cd clangd_20.1.0 && \
+cp bin/* $HOME/.local/bin && \
+mkdir -p $HOME/.local/lib && \
+cp lib/* $HOME/.local/lib && \
+printf "\n\n clangd instalado \n\n"
+

@@ -42,7 +42,6 @@ require('paq') {
     { 'windwp/nvim-autopairs' },
     { 'IogaMaster/neocord' },
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
-
 }
 -- ####################################################################################################################################################################################################
 
@@ -212,9 +211,12 @@ for type, icon in pairs(signs) do
 end
 ]]--
 
-
 -- Signs for LSP on editor (neovim 0.11) *note[1]
 vim.diagnostic.config({
+    virtual_text = true,
+    update_in_insert = true, -- false,
+--  underline = true,
+    severity_sort = true,
 	signs = {
 		text = {
 			[vim.diagnostic.severity.ERROR] = "", --"",
@@ -222,13 +224,14 @@ vim.diagnostic.config({
 			[vim.diagnostic.severity.INFO] = "󰋼",
 			[vim.diagnostic.severity.HINT] = "󰌵",
 		},
-		texthl = {
+--[[		texthl = {
 			[vim.diagnostic.severity.ERROR] = "Error",
 			[vim.diagnostic.severity.WARN] = "Warn",
 			[vim.diagnostic.severity.INFO] = "Info",
 			[vim.diagnostic.severity.HINT] = "Hint",
 		},
-		numhl = {
+]]--
+        numhl = {
 			[vim.diagnostic.severity.ERROR] = "",
 			[vim.diagnostic.severity.WARN] = "",
 			[vim.diagnostic.severity.INFO] = "",
@@ -237,6 +240,9 @@ vim.diagnostic.config({
 	},
 })
 
+Diagnostics_under_cursor = function()
+    vim.diagnostic.open_float(nil, { focusable = true })
+end
 
 -- Sonokai                                                                                                                  lua-plugin-config-*sonokai 
 vim.cmd.colorscheme('sonokai')
@@ -424,8 +430,12 @@ keymap('n', '<C-h>', ':<C-w>h', opts)
 
 keymap('n', 'S', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
 
+keymap('n', '<Leader>1', ':lua Diagnostics_under_cursor()<CR>', opts) -- open_float for diagnostics
+
 -- Insert mode
-keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)
+-- keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)
+keymap('i', '<Leader>0', '<Esc>A;', opts)
+keymap('i', '<Leader>-', '<Esc>A {<CR> <BS><Esc>mmA<CR>}<Esc>`ma', opts)
 
 -- ####################################################################################################################################################################################################
 

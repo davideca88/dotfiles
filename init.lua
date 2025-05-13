@@ -34,6 +34,7 @@ require('paq') {
     { 'hrsh7th/cmp-path' },
     { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
+    { 'rafamadriz/friendly-snippets' },
     { 'nvim-tree/nvim-web-devicons' },
     { 'nvim-lualine/lualine.nvim' },
     { 'akinsho/bufferline.nvim' },
@@ -49,7 +50,7 @@ require('paq') {
 
 -- nvim-cmp                                                                                                                 lua-plugin-config-*cmp
 
-local cmp = require('cmp')
+-- local cmp = require('cmp')
 local kind_icons = {
     Text = "",
     Method = "󰆧",
@@ -79,6 +80,24 @@ local kind_icons = {
     Misc = " ",
  }
 
+
+local cmp_status_ok, cmp = pcall(require, "cmp")
+if not cmp_status_ok then
+  return
+end
+
+local snip_status_ok, luasnip = pcall(require, "luasnip")
+if not snip_status_ok then
+  return
+end
+
+require("luasnip/loaders/from_vscode").lazy_load()
+
+local check_backspace = function()
+  local col = vim.fn.col "." - 1
+  return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
+end
+
 cmp.setup({
 
     snippet = {
@@ -96,8 +115,39 @@ cmp.setup({
         ['<C-e>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 
-        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
+--        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+--        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
+
+    -- Accept currently selected item. If none selected, `select` first item.
+    -- Set `select` to `false` to only confirm explicitly selected items.
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expandable() then
+        luasnip.expand()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      elseif check_backspace() then
+        fallback()
+      else
+        fallback()
+      end
+    end, {
+      "i",
+      "s",
+    }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {
+      "i",
+      "s",
+    }),
 
         ['<UP>'] = cmp.mapping({
             i = function(fallback)
@@ -168,7 +218,10 @@ lspconfig.<LSP>.setup {
 
 -- clangd for c/c++
 lspconfig.clangd.setup {
-    capabilities = capabilities
+    capabilities = capabilities,
+    init_options = {
+        fallbackFlags = { '-std=c23' },
+    }
 }
 
 lspconfig.arduino_language_server.setup {

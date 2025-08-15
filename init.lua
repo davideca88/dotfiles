@@ -83,19 +83,19 @@ local kind_icons = {
 
 local cmp_status_ok, cmp = pcall(require, "cmp")
 if not cmp_status_ok then
-  return
+    return
 end
 
 local snip_status_ok, luasnip = pcall(require, "luasnip")
 if not snip_status_ok then
-  return
+    return
 end
 
 require("luasnip/loaders/from_vscode").lazy_load()
 
 local check_backspace = function()
-  local col = vim.fn.col "." - 1
-  return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
+    local col = vim.fn.col "." - 1
+    return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
 end
 
 cmp.setup({
@@ -120,34 +120,34 @@ cmp.setup({
 
     -- Accept currently selected item. If none selected, `select` first item.
     -- Set `select` to `false` to only confirm explicitly selected items.
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expandable() then
-        luasnip.expand()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      elseif check_backspace() then
-        fallback()
-      else
-        fallback()
-      end
-    end, {
-      "i",
-      "s",
-    }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, {
-      "i",
-      "s",
-    }),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+              cmp.select_next_item()
+          elseif luasnip.expandable() then
+              luasnip.expand()
+          elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+          elseif check_backspace() then
+              fallback()
+          else
+              fallback()
+          end
+        end, {
+          "i",
+          "s",
+        }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+              cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+          else
+              fallback()
+          end
+        end, {
+          "i",
+          "s",
+        }),
 
         ['<UP>'] = cmp.mapping({
             i = function(fallback)
@@ -220,12 +220,8 @@ lspconfig.<LSP>.setup {
 lspconfig.clangd.setup {
     capabilities = capabilities,
     init_options = {
-        fallbackFlags = { '-std=c23' },
+        fallbackFlags = { '-xc', '-std=c23' },
     }
-}
-
-lspconfig.arduino_language_server.setup {
-    capabilities = capabilities
 }
 
 -- pyright for python3.x
@@ -264,7 +260,7 @@ for type, icon in pairs(signs) do
 end
 ]]--
 
--- Signs for LSP on editor (neovim 0.11) *note[1]
+-- Signs for LSP on editor (neovim 0.11+)
 vim.diagnostic.config({
     virtual_text = true,
     update_in_insert = true, -- false,
@@ -417,6 +413,7 @@ vim.opt.wildmenu = true
 vim.opt.number = true              -- Number lines
 vim.opt.hlsearch = false           -- Disable the highlight after search
 vim.opt.mouse = "a"                -- Enable mouse
+vim.opt.scrolloff = 2              -- Sets N lines above or under the current line when scrolling
 
 vim.cmd.filetype('indent on')  -- <tab> options
 vim.opt.tabstop = 4

@@ -6,6 +6,7 @@ CONTENTS                                                                        
 *see installation                                                                                                           lua-install-plugin-manager
     -> Plugin configs                                                                                                       lua-plugin-config
       -> Nvim-cmp                                                                                                           lua-plugin-config-cmp
+      -> Mason                                                                                                              lua-plugin-config-mason
       -> Sonokai                                                                                                            lua-plugin-config-sonokai
       -> Neocord                                                                                                            lua-plugin-config-neocord
       -> Lualine                                                                                                            lua-plugin-config-lualine
@@ -13,20 +14,23 @@ CONTENTS                                                                        
       -> Toggleterm.nvim                                                                                                    lua-plugin-config-toggleterm
       -> Nvim-tree                                                                                                          lua-plugin-config-nvim-tree
       -> Nvim-autopairs                                                                                                     lua-plugin-config-nvim-autopairs
-      -> Nvim-treesitter                                                                                                    lua-plugin-config-nvim-treesitter    
-    
+      -> Nvim-treesitter                                                                                                    lua-plugin-config-nvim-treesitter
+
 2. Options                                                                                                                  lua-options
 
 3. Keymaps                                                                                                                  lua-keymaps
 
-]]--
+]] --
 -- ####################################################################################################################################################################################################
 
 -- PLUGINS, using paq-nvim                                                                                                  lua-*paq
 
 require('paq') {
+    -- Plugin manager
     { 'savq/paq-nvim' },
-    { 'sainnhe/sonokai' },
+    -- LSP and completion
+    { 'mason-org/mason.nvim' },
+    { 'windwp/nvim-autopairs' },
     { 'neovim/nvim-lspconfig' },
     { 'hrsh7th/nvim-cmp' },
     { 'hrsh7th/cmp-nvim-lsp' },
@@ -34,15 +38,18 @@ require('paq') {
     { 'hrsh7th/cmp-path' },
     { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
-    { 'rafamadriz/friendly-snippets' },
+    -- Lang specific
+    { 'mfussenegger/nvim-jdtls' }, -- java autocomplete
+    -- UI & UX
+    { 'sainnhe/sonokai' },
     { 'nvim-tree/nvim-web-devicons' },
     { 'nvim-lualine/lualine.nvim' },
     { 'akinsho/bufferline.nvim' },
     { 'akinsho/toggleterm.nvim' },
     { 'nvim-tree/nvim-tree.lua' },
-    { 'windwp/nvim-autopairs' },
-    { 'IogaMaster/neocord' },
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    -- Misc
+    { 'IogaMaster/neocord' },
 }
 -- ####################################################################################################################################################################################################
 
@@ -78,7 +85,7 @@ local kind_icons = {
     Operator = "󰆕",
     TypeParameter = "󰅲",
     Misc = " ",
- }
+}
 
 
 local cmp_status_ok, cmp = pcall(require, "cmp")
@@ -86,17 +93,20 @@ if not cmp_status_ok then
     return
 end
 
+--[[
 local snip_status_ok, luasnip = pcall(require, "luasnip")
 if not snip_status_ok then
     return
 end
 
-require("luasnip/loaders/from_vscode").lazy_load()
-
 local check_backspace = function()
     local col = vim.fn.col "." - 1
     return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
 end
+]] --
+
+require("luasnip/loaders/from_vscode").lazy_load()
+
 
 cmp.setup({
 
@@ -115,11 +125,12 @@ cmp.setup({
         ['<C-e>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 
---        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
---        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
+        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
 
     -- Accept currently selected item. If none selected, `select` first item.
     -- Set `select` to `false` to only confirm explicitly selected items.
+    --[[
         ["<Tab>"] = cmp.mapping(function(fallback)
           if cmp.visible() then
               cmp.select_next_item()
@@ -148,6 +159,7 @@ cmp.setup({
           "i",
           "s",
         }),
+    ]]--
 
         ['<UP>'] = cmp.mapping({
             i = function(fallback)
@@ -215,6 +227,7 @@ lspconfig.<LSP>.setup {
 }
 ]]--
 
+vim.lsp.enable('jdtls')
 
 -- clangd for c/c++
 lspconfig.clangd.setup {
@@ -243,6 +256,17 @@ lspconfig.lua_ls.setup {
         }
     }
 }
+
+-- Mason                                                                                                                    lua-plugin-config-*mason 
+require('mason').setup({
+    ui = {
+        icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
+        }
+    }
+})
 
 -- auto parentheses
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -410,7 +434,8 @@ vim.opt.termguicolors = true
 vim.opt.showmode = false           -- Remove modes on prompt (useful with *line like plugins)
 vim.opt.confirm = true             -- Confirm saves
 vim.opt.wildmenu = true
-vim.opt.number = true              -- Number lines
+-- vim.opt.number = true           -- Number lines
+vim.opt.relativenumber = true
 vim.opt.hlsearch = false           -- Disable the highlight after search
 vim.opt.mouse = "a"                -- Enable mouse
 vim.opt.scrolloff = 2              -- Sets N lines above or under the current line when scrolling
@@ -463,6 +488,9 @@ vim.g.mapleader = ","
 
 -- NvimTree bind
 keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- (Ctrl-/) for NvimTree
+
+-- Mason bind
+keymap('n', '<C-m>', ':Mason<CR>', opts) -- (Ctrl-m) for Mason
 
 -- Normal mode
 keymap('n', 'q', ':quit<CR>', opts)         -- quit

@@ -5,16 +5,19 @@ CONTENTS                                                                        
 1. Plugins (actually *paq-nvim)                                                                                             lua-paq
 *see installation                                                                                                           lua-install-plugin-manager
     -> Plugin configs                                                                                                       lua-plugin-config
-      -> Nvim-cmp                                                                                                           lua-plugin-config-cmp
-      -> Mason                                                                                                              lua-plugin-config-mason
-      -> Sonokai                                                                                                            lua-plugin-config-sonokai
-      -> Neocord                                                                                                            lua-plugin-config-neocord
-      -> Lualine                                                                                                            lua-plugin-config-lualine
-      -> Bufferline                                                                                                         lua-plugin-config-bufferline
-      -> Toggleterm.nvim                                                                                                    lua-plugin-config-toggleterm
-      -> Nvim-tree                                                                                                          lua-plugin-config-nvim-tree
-      -> Nvim-autopairs                                                                                                     lua-plugin-config-nvim-autopairs
-      -> Nvim-treesitter                                                                                                    lua-plugin-config-nvim-treesitter
+      -> Mason                                                                                                              mason
+      -> Nvim-autopairs                                                                                                     nvim-autopairs
+      -> Nvim-cmp                                                                                                           cmp
+      -> Nvim-lspconfig                                                                                                     lspconfig
+      -> Sonokai                                                                                                            sonokai
+      -> Lualine                                                                                                            lualine
+      -> Bufferline                                                                                                         bufferline
+      -> Toggleterm.nvim                                                                                                    toggleterm
+      -> Nvim-tree                                                                                                          nvim-tree
+      -> Nvim-treesitter                                                                                                    nvim-treesitter
+      -> Telescope                                                                                                          telescope
+      -> Neocord                                                                                                            neocord
+      -> Remote-nvim.nvim                                                                                                   remote-nvim
 
 2. Options                                                                                                                  lua-options
 
@@ -28,18 +31,21 @@ CONTENTS                                                                        
 require('paq') {
     -- Plugin manager
     { 'savq/paq-nvim' },
+
     -- LSP and completion
     { 'mason-org/mason.nvim' },
     { 'windwp/nvim-autopairs' },
     { 'neovim/nvim-lspconfig' },
-    { 'hrsh7th/nvim-cmp' },
-    { 'hrsh7th/cmp-nvim-lsp' },
-    { 'hrsh7th/cmp-buffer' },
-    { 'hrsh7th/cmp-path' },
-    { 'hrsh7th/cmp-cmdline' },
+        { 'hrsh7th/nvim-cmp' },
+        { 'hrsh7th/cmp-nvim-lsp' },
+        { 'hrsh7th/cmp-buffer' },   -- nvim-cmp and family
+        { 'hrsh7th/cmp-path' },
+        { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
+
     -- Lang specific
-    { 'mfussenegger/nvim-jdtls' }, -- java autocomplete
+    { 'mfussenegger/nvim-jdtls' }, -- java language server
+
     -- UI & UX
     { 'sainnhe/sonokai' },
     { 'nvim-tree/nvim-web-devicons' },
@@ -48,14 +54,19 @@ require('paq') {
     { 'akinsho/toggleterm.nvim' },
     { 'nvim-tree/nvim-tree.lua' },
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+
     -- Misc
+    { 'nvim-lua/plenary.nvim' },
+    { 'nvim-telescope/telescope.nvim', branch = '0.1.x' },
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     { 'IogaMaster/neocord' },
+    { 'amitds1997/remote-nvim.nvim' },
 }
 -- ####################################################################################################################################################################################################
 
 -- Plugin configs                                                                                                           lua-plugin-config
 
--- nvim-cmp                                                                                                                 lua-plugin-config-*cmp
+-- nvim-cmp                                                                                                                 *cmp
 
 -- local cmp = require('cmp')
 local kind_icons = {
@@ -107,6 +118,13 @@ end
 
 require("luasnip/loaders/from_vscode").lazy_load()
 
+-- Mason                                                                                                                    *mason 
+require('mason').setup({
+    ui = { icons = { package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" } }
+})
+
+-- Nvim-autopairs                                                                                                           nvim-*autopairs
+require('nvim-autopairs').setup()
 
 cmp.setup({
 
@@ -216,7 +234,8 @@ cmp.setup({
 
 }) -- end of cmp.setup
 
--- LSP configs (lsp-config and cmp_nvim_lsp)
+-- LSP configs (lsp-config and cmp_nvim_lsp)                                                                                *lspconfig
+
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lspconfig = require('lspconfig')
 
@@ -227,7 +246,21 @@ lspconfig.<LSP>.setup {
 }
 ]]--
 
+-- jdtls for java
+vim.lsp.config("jdtls", {
+    root_dir = vim.fs.root(0, {'gradlew', '.git', 'mvnw', '.gitignore'}),
+    settings = {
+        java = {
+
+        },
+    },
+})
 vim.lsp.enable('jdtls')
+
+-- dockerfile-language-server for Dockerfile
+lspconfig.dockerls.setup {
+    capabilities = capabilities;
+}
 
 -- clangd for c/c++
 lspconfig.clangd.setup {
@@ -257,32 +290,12 @@ lspconfig.lua_ls.setup {
     }
 }
 
--- Mason                                                                                                                    lua-plugin-config-*mason 
-require('mason').setup({
-    ui = {
-        icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-        }
-    }
-})
-
 -- auto parentheses
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 cmp.event:on(
     'confirm_done',
     cmp_autopairs.on_confirm_done()
 )
-
---[[
--- Signs for LSP on editor
-local signs = { Error = "", Warn = "", Hint = "", Info = "" }
-for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
-]]--
 
 -- Signs for LSP on editor (neovim 0.11+)
 vim.diagnostic.config({
@@ -317,13 +330,91 @@ Diagnostics_under_cursor = function()
     vim.diagnostic.open_float(nil, { focusable = true })
 end
 
--- Sonokai                                                                                                                  lua-plugin-config-*sonokai 
+-- Sonokai                                                                                                                  *sonokai 
 vim.cmd.colorscheme('sonokai')
 vim.g.sonokai_style = 'atlantis'
 vim.g.sonokai_better_performance = 0
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
 
--- Neocord                                                                                                                  lua-plugin-config-*neocord 
+
+-- Lualine                                                                                                                  *lualine
+require('lualine').setup({
+    options = {
+        theme = 'sonokai'
+    }
+})
+
+-- Bufferline                                                                                                               *bufferline
+require('bufferline').setup{
+    options = {
+        theme = 'sonokai',
+        separator_style = 'slant',
+        diagnostics = 'nvim_lsp'
+    }
+}
+
+-- Toggleterm.nvim                                                                                                          *toggleterm
+require('toggleterm').setup{
+    open_mapping = [[<c-\>]],
+    size = 30,
+    hide_numbers = true,
+    shading_factor = '10',
+    close_on_exit = true,
+    start_in_insert = true,
+    insert_mappings = true,
+    direction = 'float',    -- 'vertical', 'tab'
+    float_opts = {
+        border = 'curved', -- 'single' | 'double' | 'shadow' | 'curved'
+        -- width = <value>,
+        -- height = <value>,
+        winblend = 10,
+  }
+}
+
+
+-- Nvim-tree                                                                                                                nvim-*tree
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- Setup with some options
+require("nvim-tree").setup({
+    sort = {
+      sorter = "case_sensitive",
+    },
+
+    view = {
+      width = 30,
+    },
+
+    renderer = {
+      group_empty = true,
+    },
+
+    filters = {
+      dotfiles = true,
+    },
+})
+
+
+
+-- Nvim-treesitter                                                                                                          nvim-*treesitter
+require('nvim-treesitter.configs').setup {
+  highlight = {
+    enable = true,
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
+
+-- Telescope                                                                                                                *telescope
+require('telescope').setup()
+require('telescope').load_extension('fzf')
+
+-- Neocord                                                                                                                  *neocord 
 -- The setup config table shows all available config options with their default values:
 require("neocord").setup({
     -- General options
@@ -350,81 +441,8 @@ require("neocord").setup({
     terminal_text       = "Using Terminal",           -- Format string rendered when in terminal mode.
 })
 
--- Lualine                                                                                                                  lua-plugin-config-*lualine
-require('lualine').setup({
-    options = {
-        theme = 'sonokai'
-    }
-})
-
--- Bufferline                                                                                                               lua-plugin-config-*bufferline
-require('bufferline').setup{
-    options = {
-        theme = 'sonokai',
-        separator_style = 'slant',
-        diagnostics = 'nvim_lsp'
-    }
-}
-
--- Toggleterm.nvim                                                                                                          lua-plugin-config-*toggleterm
-require('toggleterm').setup{
-    open_mapping = [[<c-\>]],
-    size = 30,
-    hide_numbers = true,
-    shading_factor = '10',
-    close_on_exit = true,
-    start_in_insert = true,
-    insert_mappings = true,
-    direction = 'float',    -- 'vertical', 'tab'
-    float_opts = {
-        border = 'curved', -- 'single' | 'double' | 'shadow' | 'curved'
-        -- width = <value>,
-        -- height = <value>,
-        winblend = 10,
-  }
-}
-
-
--- Nvim-tree                                                                                                                lua-plugin-config-nvim-*tree
--- disable netrw at the very start of your init.lua
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- Setup with some options
-require("nvim-tree").setup({
-    sort = {
-      sorter = "case_sensitive",
-    },
-
-    view = {
-      width = 30,
-    },
-
-    renderer = {
-      group_empty = true,
-    },
-
-    filters = {
-      dotfiles = true,
-    },
-})
-
-
--- Nvim-autopairs                                                                                                           lua-plugin-config-nvim-*autopairs
-
-require('nvim-autopairs').setup()
-
--- Nvim-treesitter                                                                                                          lua-plugin-config-nvim-*treesitter
-require('nvim-treesitter.configs').setup {
-  highlight = {
-    enable = true,
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
-}
+-- Remote-nvim.nvim                                                                                                         *remote-nvim
+require("remote-nvim").setup()
 
 -- ####################################################################################################################################################################################################
 
@@ -470,7 +488,7 @@ vim.cmd([[
 
 -- Keymaps                                                                                                                  lua-*keymaps
 local opts = { noremap = true, silent = true }
-local keymap = vim.api.nvim_set_keymap
+local keymap = vim.keymap.set -- vim.api.nvim_set_keymap
 
 -- Set <Leader> to ,
 vim.g.mapleader = ","
@@ -485,6 +503,10 @@ vim.g.mapleader = ","
 
 -- template
 -- keymap('mode', 'bind', 'command', opts)
+
+-- Telecope binds
+keymap('n', '<Leader>ff', require('telescope.builtin').find_files, opts)
+keymap('n', '<Leader>fb', require('telescope.builtin').builtin, opts)
 
 -- NvimTree bind
 keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- (Ctrl-/) for NvimTree

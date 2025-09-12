@@ -17,7 +17,6 @@ CONTENTS                                                                        
       -> Nvim-treesitter                                                                                                    nvim-treesitter
       -> Telescope                                                                                                          telescope
       -> Neocord                                                                                                            neocord
-      -> Remote-nvim.nvim                                                                                                   remote-nvim
 
 2. Options                                                                                                                  lua-options
 
@@ -42,6 +41,7 @@ require('paq') {
         { 'hrsh7th/cmp-path' },
         { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
+    { 'esensar/nvim-dev-container' },
 
     -- Lang specific
     { 'mfussenegger/nvim-jdtls' }, -- java language server
@@ -54,13 +54,15 @@ require('paq') {
     { 'akinsho/toggleterm.nvim' },
     { 'nvim-tree/nvim-tree.lua' },
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    { 'MeanderingProgrammer/render-markdown.nvim' },
 
     -- Misc
     { 'nvim-lua/plenary.nvim' },
     { 'nvim-telescope/telescope.nvim', branch = '0.1.x' },
     { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     { 'IogaMaster/neocord' },
-    { 'amitds1997/remote-nvim.nvim' },
+--  { 'amitds1997/remote-nvim.nvim' },
+--  { 'nosduco/remote-sshfs.nvim' },
 }
 -- ####################################################################################################################################################################################################
 
@@ -330,11 +332,12 @@ Diagnostics_under_cursor = function()
     vim.diagnostic.open_float(nil, { focusable = true })
 end
 
+
 -- Sonokai                                                                                                                  *sonokai 
-vim.cmd.colorscheme('sonokai')
-vim.g.sonokai_style = 'atlantis'
-vim.g.sonokai_better_performance = 0
+-- vim.g.sonokai_style = 'shusia'
+vim.g.sonokai_diagnostic_text_highlight = 1
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
+vim.cmd.colorscheme('sonokai')
 
 
 -- Lualine                                                                                                                  *lualine
@@ -400,14 +403,20 @@ require("nvim-tree").setup({
 
 -- Nvim-treesitter                                                                                                          nvim-*treesitter
 require('nvim-treesitter.configs').setup {
-  highlight = {
-    enable = true,
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
+    ensure_installed = { 'c', 'python', 'lua', 'markdown' },
+
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+}
+-- devcontainer
+require("devcontainer").setup({})
+
+
+-- Render-markdown.nvim                                                                                                     *render-markdown
+require('render-markdown').setup {
+    completions = { lsp = { enabled = true } },
 }
 
 -- Telescope                                                                                                                *telescope
@@ -441,8 +450,9 @@ require("neocord").setup({
     terminal_text       = "Using Terminal",           -- Format string rendered when in terminal mode.
 })
 
--- Remote-nvim.nvim                                                                                                         *remote-nvim
-require("remote-nvim").setup()
+
+-- Remote-nvim.nvim
+-- require("remote-nvim").setup()
 
 -- ####################################################################################################################################################################################################
 
@@ -517,7 +527,6 @@ keymap('n', '<C-m>', ':Mason<CR>', opts) -- (Ctrl-m) for Mason
 -- Normal mode
 keymap('n', 'q', ':quit<CR>', opts)         -- quit
 keymap('n', 'w', ':write<CR>', opts)        -- save
-keymap('n', 'x', ':wq<CR>', opts)           -- save and quit
 keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
 keymap('n', '<C-p>', ':source<CR>', opts)   -- source
 keymap('n', '<C-right>', ':bn<CR>', opts)   -- next buffer

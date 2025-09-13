@@ -24,6 +24,6 @@ fi
 
 # If wants to clean install dotfiles, remove the directory
 if [ "$1" = "clean" ]; then
-    rm -rf dotfiles/dotfiles/
+    rm -rf dotfiles
     echo "Dotfiles dir deleted ;)"
 fi

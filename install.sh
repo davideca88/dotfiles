@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
-CALLDIR=$(pwd)
-
-cat ./bashrc >> $HOME/.bashrc
+cat dotfiles/bashrc >> $HOME/.bashrc
 
 # Install NeoVim plugin manager (currently paq-nvim)
 mkdir -p $HOME/.local/share/
@@ -11,11 +9,11 @@ git clone --depth=1 https://github.com/savq/paq-nvim.git \
 
 # Create ~/.config and put init.lua
 mkdir -p $HOME/.config/nvim/
-cp ./init.lua $HOME/.config/nvim/init.lua
+cp dotfiles/init.lua $HOME/.config/nvim/init.lua
 
 # Install Meslo NerdFont
 mkdir -p $HOME/.local/share/fonts/ &&\
-cp ./font.ttf $HOME/.local/share/fonts/MesloLGSNFRegular.ttf
+cp dotfiles/font.ttf $HOME/.local/share/fonts/MesloLGSNFRegular.ttf
 fc-cache -f
 fc-cache -r
 
@@ -26,7 +24,6 @@ fi
 
 # If wants to clean install dotfiles, remove the directory
 if [ "$1" = "clean" ]; then
-    rm -rf ../dotfiles/
+    rm -rf dotfiles/dotfiles/
     echo "Dotfiles dir deleted ;)"
-    cd $CALLDIR
 fi

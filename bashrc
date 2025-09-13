@@ -1,5 +1,5 @@
 #
-# ~/.bashrc
+# Deca's ~/.bashrc main parts
 #
 
 export PATH=$HOME/.local/bin:$PATH
@@ -9,9 +9,6 @@ export USB_STICK=/run/media/deca/
 
 NVIM_CONFIG_FILE=$HOME/.config/nvim/init.lua
 XDG_CONFIG_HOME=$HOME/.config
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
 
 alias ls='ls --color=auto'
 alias ll='ls -l'
@@ -29,13 +26,4 @@ alias n='nvim'
 alias nv='nvim'
 alias py='python3'
 
-
-#PS1='[\u@\h \W]\$ '
-# BASHLINE config -------------------------------------------------------------------
-function prompt_command {
-    STATUS=$?
-    export PS1=$($HOME/.config/bashline/bashline.sh $STATUS)
-}
-
-[[ -e "$HOME/.config/bashline/bashline.sh" ]] && export PROMPT_COMMAND=prompt_command
-# End of BASHLINE config ------------------------------------------------------------
+# end of the main parts

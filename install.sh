@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+CALLDIR=$(pwd)
+
 cat ./bashrc >> $HOME/.bashrc
 
 # Install NeoVim plugin manager (currently paq-nvim)
@@ -23,7 +25,8 @@ if nvim -v &> /dev/null; then
 fi
 
 # If wants to clean install dotfiles, remove the directory
-if [ "$1" -eq "clean" ]; then
+if [ "$1" = "clean" ]; then
     rm -rf ../dotfiles/
     echo "Dotfiles dir deleted ;)"
+    cd $CALLDIR
 fi

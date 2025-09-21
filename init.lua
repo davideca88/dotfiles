@@ -8,7 +8,7 @@ CONTENTS                                                                        
       -> Mason                                                                                                              mason
       -> Nvim-autopairs                                                                                                     nvim-autopairs
       -> Nvim-cmp                                                                                                           cmp
-      -> Nvim-lspconfig                                                                                                     lspconfig
+        * lspconfig                                                                                                         lspconfig
       -> Sonokai                                                                                                            sonokai
       -> Lualine                                                                                                            lualine
       -> Bufferline                                                                                                         bufferline
@@ -22,11 +22,10 @@ CONTENTS                                                                        
 
 3. Keymaps                                                                                                                  lua-keymaps
 
-]] --
+]]
 -- ####################################################################################################################################################################################################
 
 -- PLUGINS, using paq-nvim                                                                                                  lua-*paq
-
 require('paq') {
     -- Plugin manager
     { 'savq/paq-nvim' },
@@ -116,7 +115,7 @@ local check_backspace = function()
     local col = vim.fn.col "." - 1
     return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
 end
-]] --
+]]
 
 require("luasnip/loaders/from_vscode").lazy_load()
 
@@ -147,39 +146,6 @@ cmp.setup({
 
         ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
         ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
-
-    -- Accept currently selected item. If none selected, `select` first item.
-    -- Set `select` to `false` to only confirm explicitly selected items.
-    --[[
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-              cmp.select_next_item()
-          elseif luasnip.expandable() then
-              luasnip.expand()
-          elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-          elseif check_backspace() then
-              fallback()
-          else
-              fallback()
-          end
-        end, {
-          "i",
-          "s",
-        }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-              cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-          else
-              fallback()
-          end
-        end, {
-          "i",
-          "s",
-        }),
-    ]]--
 
         ['<UP>'] = cmp.mapping({
             i = function(fallback)
@@ -239,58 +205,61 @@ cmp.setup({
 -- LSP configs (lsp-config and cmp_nvim_lsp)                                                                                *lspconfig
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local lspconfig = require('lspconfig')
 
--- template
---[[
-lspconfig.<LSP>.setup {
-    capabilities = capabilities
+local servers = {
+    'jdtls',    -- java
+    'dockerls', -- Dockerfile 
+    'clangd',   -- C/C++
+    'pyright',  -- Python
+--  'lua_ls'    -- Lua
 }
-]]--
 
--- jdtls for java
-vim.lsp.config("jdtls", {
-    root_dir = vim.fs.root(0, {'gradlew', '.git', 'mvnw', '.gitignore'}),
+local server_configs = {
+
+    jdtls = {
+        root_dir = vim.fs.root(0, {'gradlew', '.git', 'mvnw', '.gitignore'}),
+        settings = {
+            java = {},
+        },
+    },
+
+    dockerls = {},
+
+    clangd = {
+        init_options = {
+            fallbackFlags = { '-xc', '-std=c23' },
+        },
+    },
+
+    pyright = {},
+
+
+}
+
+for server_name, config in pairs(server_configs) do
+
+    config.capabilities = capabilities
+
+    config.settings = {[server_name] = {}}
+
+    vim.lsp.config(server_name, config)
+end
+
+vim.lsp.config( 'lua_ls', {
+    capabilities = capabilities,
+
     settings = {
-        java = {
-
+        ['lua_ls'] = {},
+        Lua = {
+            diagnostics = { globals = {'vim', 'guicursor'},
+                            disable = { 'missing-fields' } },
+            workspace = { library = vim.api.nvim_get_runtime_file("", true) },
         },
     },
 })
-vim.lsp.enable('jdtls')
 
--- dockerfile-language-server for Dockerfile
-lspconfig.dockerls.setup {
-    capabilities = capabilities;
-}
-
--- clangd for c/c++
-lspconfig.clangd.setup {
-    capabilities = capabilities,
-    init_options = {
-        fallbackFlags = { '-xc', '-std=c23' },
-    }
-}
-
--- pyright for python3.x
-lspconfig.pyright.setup {
-    capabilities = capabilities
-}
-
--- luals for lua
-lspconfig.lua_ls.setup {
-    capabilities = capabilities,
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = {
-                    "vim",
-                    "guicursor",
-                }
-            }
-        }
-    }
-}
+vim.lsp.enable(servers)
+vim.lsp.enable('lua_ls')
 
 -- auto parentheses
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -318,7 +287,7 @@ vim.diagnostic.config({
 			[vim.diagnostic.severity.INFO] = "Info",
 			[vim.diagnostic.severity.HINT] = "Hint",
 		},
-]]--
+]]
         numhl = {
 			[vim.diagnostic.severity.ERROR] = "",
 			[vim.diagnostic.severity.WARN] = "",
@@ -537,21 +506,21 @@ keymap('n', '<C-k>', ':<C-w>k', opts)
 keymap('n', '<C-j>', ':<C-w>j', opts)
 keymap('n', '<C-h>', ':<C-w>h', opts)
 
-keymap('n', 'S', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
+keymap('n', '<Leader>s', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
 
 keymap('n', '<Leader>1', ':lua Diagnostics_under_cursor()<CR>', opts) -- open_float for diagnostics
 
 -- Insert mode
 -- keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)
+keymap('i', '<Leader>,', '<Esc>A', opts)
 keymap('i', '<Leader>0', '<Esc>A;', opts)
 keymap('i', '<Leader>-', '<Esc>A {<CR> <BS><Esc>mmA<CR>}<Esc>`ma', opts)
-
 -- ####################################################################################################################################################################################################
 
 --[[
 Notes:
     *1 Neovim sign-define deprecated <https://github.com/neovim/neovim/issues/33144>
-]]--
+]]
 -- Install extra                                                                                                   lua-*install-plugin-manager
 --[[
 

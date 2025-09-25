@@ -11,6 +11,10 @@ git clone --depth=1 https://github.com/savq/paq-nvim.git \
 mkdir -p $HOME/.config/nvim/
 cp dotfiles/init.lua $HOME/.config/nvim/init.lua
 
+# Devcontainer stuff
+mkdir -p ~/.config/nvim/devcontainer/ \
+    && cp -r dotfiles/devcontainer/* ~/.config/nvim/devcontainer/
+
 # Install Meslo NerdFont
 mkdir -p $HOME/.local/share/fonts/ &&\
 cp dotfiles/font.ttf $HOME/.local/share/fonts/MesloLGSNFRegular.ttf

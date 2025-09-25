@@ -1,0 +1,31 @@
+{
+  "name": "Nvim-Devcontainer",
+
+  // Using our handsome Dockerfile
+  "dockerFile": "Dockerfile",
+
+  // We're interested in the father dir
+  "context": "..",
+
+  // Mounting the big dog to our tiny devcontainer
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/dev/workspace/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/home/dev/workspace/${localWorkspaceFolderBasename}",
+
+  // Args to docker run
+  "runArgs": [
+    // "--expose=8080"
+  ],
+
+  // Someonde told me to leave this here ;(
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    },
+  },
+
+  // We (chad)
+  "remoteUser": "dev",
+
+  // Configure all my personal dotfiles
+  "postCreateCommand": "git clone https://github.com/davideca88/dotfiles && sh dotfiles/install.sh clean && echo Container is ready!"
+}

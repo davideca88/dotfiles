@@ -40,10 +40,10 @@ require('paq') {
         { 'hrsh7th/cmp-path' },
         { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
-    { 'esensar/nvim-dev-container' },
+--  { 'esensar/nvim-dev-container' },
 
     -- Lang specific
-    { 'mfussenegger/nvim-jdtls' }, -- java language server
+--  { 'mfussenegger/nvim-jdtls' }, -- java language server
 
     -- UI & UX
     { 'sainnhe/sonokai' },
@@ -58,8 +58,8 @@ require('paq') {
     -- Misc
     { 'nvim-lua/plenary.nvim' },
     { 'nvim-telescope/telescope.nvim', branch = '0.1.x' },
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-    { 'IogaMaster/neocord' },
+--  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+--  { 'IogaMaster/neocord' },
 --  { 'amitds1997/remote-nvim.nvim' },
 --  { 'nosduco/remote-sshfs.nvim' },
 }
@@ -211,6 +211,7 @@ local servers = {
     'dockerls', -- Dockerfile 
     'clangd',   -- C/C++
     'pyright',  -- Python
+    'bashls'
 --  'lua_ls'    -- Lua
 }
 
@@ -227,7 +228,7 @@ local server_configs = {
 
     clangd = {
         init_options = {
-            fallbackFlags = { '-xc', '-std=c23' },
+--          fallbackFlags = { '-xc', '-std=c23' },
         },
     },
 
@@ -296,11 +297,6 @@ vim.diagnostic.config({
 		},
 	},
 })
-
-Diagnostics_under_cursor = function()
-    vim.diagnostic.open_float(nil, { focusable = true })
-end
-
 
 -- Sonokai                                                                                                                  *sonokai 
 -- vim.g.sonokai_style = 'shusia'
@@ -372,7 +368,7 @@ require("nvim-tree").setup({
 
 -- Nvim-treesitter                                                                                                          nvim-*treesitter
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'c', 'python', 'lua', 'markdown' },
+--  ensure_installed = { 'c', 'python', 'lua', 'markdown' },
 
     highlight = {
         enable = true,
@@ -380,7 +376,7 @@ require('nvim-treesitter.configs').setup {
     },
 }
 -- devcontainer
-require("devcontainer").setup({})
+-- require("devcontainer").setup({})
 
 
 -- Render-markdown.nvim                                                                                                     *render-markdown
@@ -390,7 +386,7 @@ require('render-markdown').setup {
 
 -- Telescope                                                                                                                *telescope
 require('telescope').setup()
-require('telescope').load_extension('fzf')
+-- require('telescope').load_extension('fzf')
 
 -- Neocord                                                                                                                  *neocord 
 -- The setup config table shows all available config options with their default values:
@@ -431,7 +427,7 @@ vim.opt.termguicolors = true
 vim.opt.showmode = false           -- Remove modes on prompt (useful with *line like plugins)
 vim.opt.confirm = true             -- Confirm saves
 vim.opt.wildmenu = true
--- vim.opt.number = true           -- Number lines
+vim.opt.number = true           -- Number lines
 vim.opt.relativenumber = true
 vim.opt.hlsearch = false           -- Disable the highlight after search
 vim.opt.mouse = "a"                -- Enable mouse
@@ -448,7 +444,7 @@ vim.opt.cpoptions = vim.opt.cpoptions + "I"
 vim.opt.indentkeys = vim.opt.indentkeys - ":'indentkeysi"
 
 vim.cmd.syntax('on')        -- Syntax highlight
-vim.g.c_syntax_for_h = 1
+vim.g.c_syntax_for_h = 1 -- mudei
 vim.opt.wrap = false        -- No wrap the line
 vim.opt.modelines = 0       -- Security
 vim.opt.cursorline = true
@@ -494,10 +490,10 @@ keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- (Ctrl-/) for NvimTree
 keymap('n', '<C-m>', ':Mason<CR>', opts) -- (Ctrl-m) for Mason
 
 -- Normal mode
-keymap('n', 'q', ':quit<CR>', opts)         -- quit
+--keymap('n', 'q', ':quit<CR>', opts)         -- quit
 keymap('n', 'w', ':write<CR>', opts)        -- save
-keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
-keymap('n', '<C-p>', ':source<CR>', opts)   -- source
+--keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
+--keymap('n', '<C-p>', ':source<CR>', opts)   -- source
 keymap('n', '<C-right>', ':bn<CR>', opts)   -- next buffer
 keymap('n', '<C-left>', ':bp<CR>', opts)    -- previous buffer
 keymap('n', '<C-del>', ':bd<CR>', opts)     -- buffer delete
@@ -508,7 +504,7 @@ keymap('n', '<C-h>', ':<C-w>h', opts)
 
 keymap('n', '<Leader>s', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
 
-keymap('n', '<Leader>1', ':lua Diagnostics_under_cursor()<CR>', opts) -- open_float for diagnostics
+keymap('n', 'L', ':lua vim.diagnostic.open_float(nil, { focusable = true })<CR>', opts) -- open_float for diagnostics
 
 -- Insert mode
 -- keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)

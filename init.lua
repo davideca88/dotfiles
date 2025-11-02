@@ -40,10 +40,10 @@ require('paq') {
         { 'hrsh7th/cmp-path' },
         { 'hrsh7th/cmp-cmdline' },
     { 'L3MON4D3/LuaSnip' },
---  { 'esensar/nvim-dev-container' },
+    { 'esensar/nvim-dev-container' },
 
     -- Lang specific
---  { 'mfussenegger/nvim-jdtls' }, -- java language server
+    { 'mfussenegger/nvim-jdtls' }, -- java language server
 
     -- UI & UX
     { 'sainnhe/sonokai' },
@@ -58,8 +58,8 @@ require('paq') {
     -- Misc
     { 'nvim-lua/plenary.nvim' },
     { 'nvim-telescope/telescope.nvim', branch = '0.1.x' },
---  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
---  { 'IogaMaster/neocord' },
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+    { 'IogaMaster/neocord' },
 --  { 'amitds1997/remote-nvim.nvim' },
 --  { 'nosduco/remote-sshfs.nvim' },
 }
@@ -323,7 +323,7 @@ require('bufferline').setup{
 
 -- Toggleterm.nvim                                                                                                          *toggleterm
 require('toggleterm').setup{
-    open_mapping = [[<c-\>]],
+    open_mapping = [[<c-t>]],
     size = 30,
     hide_numbers = true,
     shading_factor = '10',
@@ -386,7 +386,7 @@ require('render-markdown').setup {
 
 -- Telescope                                                                                                                *telescope
 require('telescope').setup()
--- require('telescope').load_extension('fzf')
+require('telescope').load_extension('fzf')
 
 -- Neocord                                                                                                                  *neocord 
 -- The setup config table shows all available config options with their default values:

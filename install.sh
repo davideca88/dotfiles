@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+FONT_DIR="${HOME}/.fonts/"
+
 cat dotfiles/bashrc >> $HOME/.bashrc
 
 # Install NeoVim plugin manager (currently paq-nvim)
@@ -16,9 +18,9 @@ mkdir -p ~/.config/nvim/devcontainer/ \
     && cp -r dotfiles/devcontainer/* ~/.config/nvim/devcontainer/
 
 # Install Meslo NerdFont
-mkdir -p $HOME/.local/share/fonts/ &&\
-cp dotfiles/font.ttf $HOME/.local/share/fonts/MesloLGSNFRegular.ttf
-fc-cache -f
+mkdir -p $FONT_DIR && \
+cp dotfiles/font.ttf $FONT_DIR && \
+fc-cache -f && \
 fc-cache -r
 
 # If has NeoVim, installs the plugins

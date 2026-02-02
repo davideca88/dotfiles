@@ -52,14 +52,15 @@ require('paq') {
     { 'akinsho/bufferline.nvim' },
     { 'akinsho/toggleterm.nvim' },
     { 'nvim-tree/nvim-tree.lua' },
-    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    { 'nvim-treesitter/nvim-treesitter', branch='master', build = ':TSUpdate' },
     { 'MeanderingProgrammer/render-markdown.nvim' },
 
     -- Misc
     { 'nvim-lua/plenary.nvim' },
-    { 'nvim-telescope/telescope.nvim', branch = '0.1.x' },
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-    { 'IogaMaster/neocord' },
+    { 'nvim-telescope/telescope.nvim'},
+--    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+--  { 'vyfor/cord.nvim' },
+--    { 'IogaMaster/neocord' },
 --  { 'amitds1997/remote-nvim.nvim' },
 --  { 'nosduco/remote-sshfs.nvim' },
 }
@@ -211,7 +212,8 @@ local servers = {
     'dockerls', -- Dockerfile 
     'clangd',   -- C/C++
     'pyright',  -- Python
-    'bashls'
+    'bashls',   -- Bash
+    'asm_lsp'   -- Assembly
 --  'lua_ls'    -- Lua
 }
 
@@ -228,13 +230,15 @@ local server_configs = {
 
     clangd = {
         init_options = {
---          fallbackFlags = { '-xc', '-std=c23' },
+          fallbackFlags = { '-xc', '-std=c23' },
         },
     },
 
     pyright = {},
 
+    bashls = {},
 
+    asm_ls = {},
 }
 
 for server_name, config in pairs(server_configs) do
@@ -368,7 +372,7 @@ require("nvim-tree").setup({
 
 -- Nvim-treesitter                                                                                                          nvim-*treesitter
 require('nvim-treesitter.configs').setup {
---  ensure_installed = { 'c', 'python', 'lua', 'markdown' },
+  ensure_installed = { 'c', 'python', 'bash', 'lua', 'markdown' },
 
     highlight = {
         enable = true,
@@ -386,7 +390,19 @@ require('render-markdown').setup {
 
 -- Telescope                                                                                                                *telescope
 require('telescope').setup()
-require('telescope').load_extension('fzf')
+--require('telescope').load_extension('fzf')
+
+--[[
+require('cord').setup{
+    display = {
+        theme = 'classic',
+        flavor = 'dark',
+        view = 'full',
+        swap_fields = false,
+        swap_icons = false,
+    },
+}
+]]--
 
 -- Neocord                                                                                                                  *neocord 
 -- The setup config table shows all available config options with their default values:
@@ -450,6 +466,14 @@ vim.opt.modelines = 0       -- Security
 vim.opt.cursorline = true
 vim.opt.clipboard = "unnamedplus"
 
+vim.opt.list = true
+vim.opt.listchars = {
+--tab = '» ',
+  trail = '•',
+  nbsp = '·',
+--eol = '$'
+}
+
 -- Restores the cursor after closing nvim (current: block, 1200ms, 600blinkon, 600blinkoff)
 vim.cmd([[
     augroup RestoreCursorShapeOnExit
@@ -482,6 +506,7 @@ vim.g.mapleader = ","
 -- Telecope binds
 keymap('n', '<Leader>ff', require('telescope.builtin').find_files, opts)
 keymap('n', '<Leader>fb', require('telescope.builtin').builtin, opts)
+keymap('n', '<Leader>d', require('telescope.builtin').diagnostics, opts)
 
 -- NvimTree bind
 keymap('n', '<C-_>', ':NvimTreeToggle<CR>', opts) -- (Ctrl-/) for NvimTree
@@ -491,7 +516,7 @@ keymap('n', '<C-m>', ':Mason<CR>', opts) -- (Ctrl-m) for Mason
 
 -- Normal mode
 --keymap('n', 'q', ':quit<CR>', opts)         -- quit
-keymap('n', 'w', ':write<CR>', opts)        -- save
+--keymap('n', 'w', ':write<CR>', opts)        -- save
 --keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
 --keymap('n', '<C-p>', ':source<CR>', opts)   -- source
 keymap('n', '<C-right>', ':bn<CR>', opts)   -- next buffer

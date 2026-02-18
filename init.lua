@@ -60,7 +60,7 @@ require('paq') {
     { 'nvim-telescope/telescope.nvim'},
 --    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 --  { 'vyfor/cord.nvim' },
---    { 'IogaMaster/neocord' },
+    { 'IogaMaster/neocord' },
 --  { 'amitds1997/remote-nvim.nvim' },
 --  { 'nosduco/remote-sshfs.nvim' },
 }
@@ -536,6 +536,7 @@ keymap('n', 'L', ':lua vim.diagnostic.open_float(nil, { focusable = true })<CR>'
 keymap('i', '<Leader>,', '<Esc>A', opts)
 keymap('i', '<Leader>0', '<Esc>A;', opts)
 keymap('i', '<Leader>-', '<Esc>A {<CR> <BS><Esc>mmA<CR>}<Esc>`ma', opts)
+keymap('i', '<Leader>s', '<Esc>:w<CR>a', opts)
 -- ####################################################################################################################################################################################################
 
 --[[

@@ -42,6 +42,10 @@ require('paq') {
     { 'L3MON4D3/LuaSnip' },
     { 'esensar/nvim-dev-container' },
 
+    -- AI agents
+--  { 'folke/snacks.nvim' },
+--  { 'coder/claudecode.nvim' },
+
     -- Lang specific
     { 'mfussenegger/nvim-jdtls' }, -- java language server
 
@@ -52,13 +56,14 @@ require('paq') {
     { 'akinsho/bufferline.nvim' },
     { 'akinsho/toggleterm.nvim' },
     { 'nvim-tree/nvim-tree.lua' },
-    { 'nvim-treesitter/nvim-treesitter', branch='master', build = ':TSUpdate' },
+    { 'romus204/tree-sitter-manager.nvim' },
+--  { 'nvim-treesitter/nvim-treesitter', branch='master', build = ':TSUpdate' },
     { 'MeanderingProgrammer/render-markdown.nvim' },
 
     -- Misc
     { 'nvim-lua/plenary.nvim' },
     { 'nvim-telescope/telescope.nvim'},
---    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
 --  { 'vyfor/cord.nvim' },
     { 'IogaMaster/neocord' },
 --  { 'amitds1997/remote-nvim.nvim' },
@@ -213,7 +218,8 @@ local servers = {
     'clangd',   -- C/C++
     'pyright',  -- Python
     'bashls',   -- Bash
-    'asm_lsp'   -- Assembly
+    'asm_lsp',  -- Assembly
+    'json_lsp'  -- JSON
 --  'lua_ls'    -- Lua
 }
 
@@ -239,8 +245,11 @@ local server_configs = {
     bashls = {},
 
     asm_ls = {},
+
+    json_lsp = {},
 }
 
+--[[
 for server_name, config in pairs(server_configs) do
 
     config.capabilities = capabilities
@@ -262,6 +271,31 @@ vim.lsp.config( 'lua_ls', {
         },
     },
 })
+]]--
+
+-- FIXED (carried from 0.11→0.12 migration):
+-- Removed the `config.settings = {[server_name] = {}}` line that was
+-- overwriting every server's settings table on each iteration.
+for server_name, config in pairs(server_configs) do
+    config.capabilities = capabilities
+    vim.lsp.config(server_name, config)
+end
+
+-- FIXED (carried from 0.11→0.12 migration):
+-- Removed the spurious `['lua_ls'] = {}` key — lua-language-server only
+-- reads the `Lua` namespace, not a `lua_ls` one.
+vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = { 'vim' },
+                disable  = { 'missing-fields' },
+            },
+            workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+        },
+    },
+})
 
 vim.lsp.enable(servers)
 vim.lsp.enable('lua_ls')
@@ -279,31 +313,32 @@ vim.diagnostic.config({
     update_in_insert = true, -- false,
 --  underline = true,
     severity_sort = true,
-	signs = {
-		text = {
-			[vim.diagnostic.severity.ERROR] = "", --"",
-			[vim.diagnostic.severity.WARN] = "",
-			[vim.diagnostic.severity.INFO] = "󰋼",
-			[vim.diagnostic.severity.HINT] = "󰌵",
-		},
---[[		texthl = {
-			[vim.diagnostic.severity.ERROR] = "Error",
-			[vim.diagnostic.severity.WARN] = "Warn",
-			[vim.diagnostic.severity.INFO] = "Info",
-			[vim.diagnostic.severity.HINT] = "Hint",
-		},
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "", --"",
+            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.INFO] = "󰋼",
+            [vim.diagnostic.severity.HINT] = "󰌵",
+    },
+--[[    texthl = {
+            [vim.diagnostic.severity.ERROR] = "Error",
+            [vim.diagnostic.severity.WARN] = "Warn",
+            [vim.diagnostic.severity.INFO] = "Info",
+            [vim.diagnostic.severity.HINT] = "Hint",
+        },
 ]]
         numhl = {
-			[vim.diagnostic.severity.ERROR] = "",
-			[vim.diagnostic.severity.WARN] = "",
-			[vim.diagnostic.severity.INFO] = "",
-			[vim.diagnostic.severity.HINT] = "",
-		},
-	},
+            [vim.diagnostic.severity.ERROR] = "",
+            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.INFO] = "",
+            [vim.diagnostic.severity.HINT] = "",
+        },
+    },
 })
 
 -- Sonokai                                                                                                                  *sonokai 
 -- vim.g.sonokai_style = 'shusia'
+vim.g.sonokai_diagnostic_line_highlight = 1
 vim.g.sonokai_diagnostic_text_highlight = 1
 vim.g.sonokai_transparent_background = 0 -- options: 0, 1, 2
 vim.cmd.colorscheme('sonokai')
@@ -319,7 +354,7 @@ require('lualine').setup({
 -- Bufferline                                                                                                               *bufferline
 require('bufferline').setup{
     options = {
-        theme = 'sonokai',
+ --     theme = 'sonokai',
         separator_style = 'slant',
         diagnostics = 'nvim_lsp'
     }
@@ -368,8 +403,18 @@ require("nvim-tree").setup({
     },
 })
 
+require("tree-sitter-manager").setup({
+  -- Default Options
+  -- ensure_installed = {}, -- list of parsers to install at the start of a neovim session
+  -- border = nil, -- border style for the window (e.g. "rounded", "single"), if nil, use the default border style defined by 'vim.o.winborder'. See :h 'winborder' for more info.
+  -- auto_install = false, -- if enabled, install missing parsers when editing a new file
+  -- highlight = true, -- treesitter highlighting is enabled by default
+  -- languages = {}, -- override or add new parser sources
+  -- parser_dir = vim.fn.stdpath("data") .. "/site/parser",
+  -- query_dir = vim.fn.stdpath("data") .. "/site/queries",
+})
 
-
+--[[
 -- Nvim-treesitter                                                                                                          nvim-*treesitter
 require('nvim-treesitter.configs').setup {
   ensure_installed = { 'c', 'python', 'bash', 'lua', 'markdown' },
@@ -379,6 +424,8 @@ require('nvim-treesitter.configs').setup {
         additional_vim_regex_highlighting = false,
     },
 }
+]]--
+
 -- devcontainer
 -- require("devcontainer").setup({})
 
@@ -390,7 +437,7 @@ require('render-markdown').setup {
 
 -- Telescope                                                                                                                *telescope
 require('telescope').setup()
---require('telescope').load_extension('fzf')
+require('telescope').load_extension('fzf')
 
 --[[
 require('cord').setup{
@@ -438,7 +485,9 @@ require("neocord").setup({
 -- ####################################################################################################################################################################################################
 
 -- Options                                                                                                                  lua-*options
-guicursor="disable"
+--guicursor="disable"
+
+-- vim.opt.winborder     = "rounded"
 vim.opt.termguicolors = true
 vim.opt.showmode = false           -- Remove modes on prompt (useful with *line like plugins)
 vim.opt.confirm = true             -- Confirm saves
@@ -519,9 +568,11 @@ keymap('n', '<C-m>', ':Mason<CR>', opts) -- (Ctrl-m) for Mason
 --keymap('n', 'w', ':write<CR>', opts)        -- save
 --keymap('n', '<S-q>', ':q!<CR>', opts)       -- force quit
 --keymap('n', '<C-p>', ':source<CR>', opts)   -- source
+
 keymap('n', '<C-right>', ':bn<CR>', opts)   -- next buffer
 keymap('n', '<C-left>', ':bp<CR>', opts)    -- previous buffer
 keymap('n', '<C-del>', ':bd<CR>', opts)     -- buffer delete
+
 keymap('n', '<C-l>', ':<C-w>l', opts)
 keymap('n', '<C-k>', ':<C-w>k', opts)
 keymap('n', '<C-j>', ':<C-w>j', opts)
@@ -529,7 +580,7 @@ keymap('n', '<C-h>', ':<C-w>h', opts)
 
 keymap('n', '<Leader>s', ':lua require(\'sudowrite.lua\').sudowrite()<CR>', opts) -- sudowrite
 
-keymap('n', 'L', ':lua vim.diagnostic.open_float(nil, { focusable = true })<CR>', opts) -- open_float for diagnostics
+keymap('n', 'L', ':lua vim.diagnostic.open_float({ focusable = true })<CR>', opts) -- open_float for diagnostics
 
 -- Insert mode
 -- keymap('i', '<Leader>0', '<Esc>mmA;<Esc>`ma', opts)

@@ -2,8 +2,7 @@
 --[[ made by a human ;)
 CONTENTS                                                                                                                    |lua-contents|
 
-1. Plugins (actually *paq-nvim)                                                                                             lua-paq
-*see installation                                                                                                           lua-install-plugin-manager
+1. Plugins (actually *vim.pack)
     -> Plugin configs                                                                                                       lua-plugin-config
       -> Mason                                                                                                              mason
       -> Nvim-autopairs                                                                                                     nvim-autopairs
@@ -25,50 +24,49 @@ CONTENTS                                                                        
 ]]
 -- ####################################################################################################################################################################################################
 
--- PLUGINS, using paq-nvim                                                                                                  lua-*paq
-require('paq') {
-    -- Plugin manager
-    { 'savq/paq-nvim' },
+-- PLUGINS, using vim.pack
 
+vim.api.nvim_create_autocmd('PackChanged', {
+    callback = function(ev)
+        if ev.data.spec.name == 'telescope-fzf-native.nvim' then
+            vim.system({ 'make' }, { cwd = ev.data.path })
+        end
+    end,
+})
+
+vim.pack.add ({
     -- LSP and completion
-    { 'mason-org/mason.nvim' },
-    { 'windwp/nvim-autopairs' },
-    { 'neovim/nvim-lspconfig' },
-        { 'hrsh7th/nvim-cmp' },
-        { 'hrsh7th/cmp-nvim-lsp' },
-        { 'hrsh7th/cmp-buffer' },   -- nvim-cmp and family
-        { 'hrsh7th/cmp-path' },
-        { 'hrsh7th/cmp-cmdline' },
-    { 'L3MON4D3/LuaSnip' },
-    { 'esensar/nvim-dev-container' },
-
-    -- AI agents
---  { 'folke/snacks.nvim' },
---  { 'coder/claudecode.nvim' },
+    'https://github.com/mason-org/mason.nvim',
+    'https://github.com/windwp/nvim-autopairs',
+    'https://github.com/neovim/nvim-lspconfig',
+        'https://github.com/hrsh7th/nvim-cmp',
+        'https://github.com/hrsh7th/cmp-nvim-lsp',
+        'https://github.com/hrsh7th/cmp-buffer',
+        'https://github.com/hrsh7th/cmp-path',
+        'https://github.com/hrsh7th/cmp-cmdline',
+    'https://github.com/L3MON4D3/LuaSnip',
+    'https://github.com/esensar/nvim-dev-container',
 
     -- Lang specific
-    { 'mfussenegger/nvim-jdtls' }, -- java language server
+--  'https://github.com/mfussenegger/nvim-jdtls', -- java
+--  'https://github.com/mrcjkb/rustaceanvim/' -- rust
 
     -- UI & UX
-    { 'sainnhe/sonokai' },
-    { 'nvim-tree/nvim-web-devicons' },
-    { 'nvim-lualine/lualine.nvim' },
-    { 'akinsho/bufferline.nvim' },
-    { 'akinsho/toggleterm.nvim' },
-    { 'nvim-tree/nvim-tree.lua' },
-    { 'romus204/tree-sitter-manager.nvim' },
---  { 'nvim-treesitter/nvim-treesitter', branch='master', build = ':TSUpdate' },
-    { 'MeanderingProgrammer/render-markdown.nvim' },
+    'https://github.com/sainnhe/sonokai',
+    'https://github.com/nvim-tree/nvim-web-devicons',
+    'https://github.com/nvim-lualine/lualine.nvim',
+    'https://github.com/akinsho/bufferline.nvim',
+    'https://github.com/akinsho/toggleterm.nvim',
+    'https://github.com/nvim-tree/nvim-tree.lua',
+    'https://github.com/romus204/tree-sitter-manager.nvim',
+    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 
     -- Misc
-    { 'nvim-lua/plenary.nvim' },
-    { 'nvim-telescope/telescope.nvim'},
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
---  { 'vyfor/cord.nvim' },
-    { 'IogaMaster/neocord' },
---  { 'amitds1997/remote-nvim.nvim' },
---  { 'nosduco/remote-sshfs.nvim' },
-}
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/nvim-telescope/telescope.nvim',
+    'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
+--  'https://github.com/IogaMaster/neocord',
+})
 -- ####################################################################################################################################################################################################
 
 -- Plugin configs                                                                                                           lua-plugin-config
@@ -219,7 +217,8 @@ local servers = {
     'pyright',  -- Python
     'bashls',   -- Bash
     'asm_lsp',  -- Assembly
-    'json_lsp'  -- JSON
+    'json_lsp',  -- JSON
+    'rust_analyzer', -- Rust
 --  'lua_ls'    -- Lua
 }
 
@@ -235,9 +234,9 @@ local server_configs = {
     dockerls = {},
 
     clangd = {
-        init_options = {
-          fallbackFlags = { '-xc', '-std=c23' },
-        },
+--        init_options = {
+--          fallbackFlags = { '-xc', '-std=c23' },
+--        },
     },
 
     pyright = {},
@@ -247,43 +246,15 @@ local server_configs = {
     asm_ls = {},
 
     json_lsp = {},
+
+    rust_analyzer = {},
 }
 
---[[
-for server_name, config in pairs(server_configs) do
-
-    config.capabilities = capabilities
-
-    config.settings = {[server_name] = {}}
-
-    vim.lsp.config(server_name, config)
-end
-
-vim.lsp.config( 'lua_ls', {
-    capabilities = capabilities,
-
-    settings = {
-        ['lua_ls'] = {},
-        Lua = {
-            diagnostics = { globals = {'vim', 'guicursor'},
-                            disable = { 'missing-fields' } },
-            workspace = { library = vim.api.nvim_get_runtime_file("", true) },
-        },
-    },
-})
-]]--
-
--- FIXED (carried from 0.11→0.12 migration):
--- Removed the `config.settings = {[server_name] = {}}` line that was
--- overwriting every server's settings table on each iteration.
 for server_name, config in pairs(server_configs) do
     config.capabilities = capabilities
     vim.lsp.config(server_name, config)
 end
 
--- FIXED (carried from 0.11→0.12 migration):
--- Removed the spurious `['lua_ls'] = {}` key — lua-language-server only
--- reads the `Lua` namespace, not a `lua_ls` one.
 vim.lsp.config('lua_ls', {
     capabilities = capabilities,
     settings = {
@@ -596,10 +567,6 @@ Notes:
 ]]
 -- Install extra                                                                                                   lua-*install-plugin-manager
 --[[
-
-# paq-nvim
-git clone --depth=1 https://github.com/savq/paq-nvim.git \
-    "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
 
 # sudowrite
 wget https://gist.githubusercontent.com/oessessnex/d63ebe89380abff5a3ee70d6e76e4ec8/raw/d1692b5a2c5d9dcca59f0c84903fba141ffb7357/sudowrite.lua
